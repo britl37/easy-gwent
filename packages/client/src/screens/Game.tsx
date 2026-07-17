@@ -5,6 +5,7 @@ import { Board } from '../components/Board.tsx';
 import { CarouselPicker } from '../components/CarouselPicker.tsx';
 import { Hand } from '../components/Hand.tsx';
 import { LogPanel, StatusColumn } from '../components/SidePanel.tsx';
+import { loadDeck } from '../game/decks.ts';
 import { HUMAN, humanAct, newLocalGame, starterDeck } from '../game/localGame.ts';
 
 export interface GameScreenProps {
@@ -15,7 +16,7 @@ export interface GameScreenProps {
 
 export function GameScreen({ faction, aiFaction, onExit }: GameScreenProps) {
   const [state, setState] = useState<GameState>(() =>
-    newLocalGame(Date.now() >>> 0, starterDeck(faction), starterDeck(aiFaction)),
+    newLocalGame(Date.now() >>> 0, loadDeck(faction), starterDeck(aiFaction)),
   );
   const [selected, setSelected] = useState<number | null>(null);
   const [preview, setPreview] = useState<string | null>(null);

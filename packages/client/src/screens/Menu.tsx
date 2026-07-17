@@ -11,8 +11,10 @@ const FACTIONS: Array<{ id: PlayableFaction; name: string }> = [
 
 export function MenuScreen({
   onPlayAi,
+  onEditDeck,
 }: {
   onPlayAi: (faction: PlayableFaction, aiFaction: PlayableFaction) => void;
+  onEditDeck: (faction: PlayableFaction) => void;
 }) {
   const [faction, setFaction] = useState<PlayableFaction>('northern_realms');
   const [aiFaction, setAiFaction] = useState<PlayableFaction>('nilfgaard');
@@ -38,7 +40,10 @@ export function MenuScreen({
         <button className="btn btn-primary" onClick={() => onPlayAi(faction, aiFaction)}>
           Play vs AI (easy)
         </button>
-        <p className="menu-note">Deck editor, difficulties and multiplayer coming in later phases.</p>
+        <button className="btn" onClick={() => onEditDeck(faction)}>
+          Edit deck
+        </button>
+        <p className="menu-note">Difficulties and multiplayer coming in later phases.</p>
       </div>
     </div>
   );

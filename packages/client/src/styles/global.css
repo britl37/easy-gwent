@@ -106,3 +106,21 @@ body {
 .result-box { background: #1d1710; border: 1px solid #8a6d3b; border-radius: 8px; padding: 24px 48px; }
 .round-table { margin: 0 auto 16px; border-collapse: collapse; }
 .round-table td { padding: 4px 14px; border-bottom: 1px solid #ffffff22; }
+
+/* ---- Deck editor ---- */
+.deck-editor { display: flex; flex-direction: column; height: 100vh; padding: 12px 16px; gap: 12px; box-sizing: border-box; }
+.editor-topbar { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.editor-columns { display: flex; gap: 16px; flex: 1; min-height: 0; }
+.editor-pane { flex: 1; display: flex; flex-direction: column; min-height: 0; overflow-y: auto; background: #00000055; border: 1px solid #6b5a36; border-radius: 6px; padding: 8px 12px; }
+.editor-pane h3 { margin: 8px 0 6px; color: #c9a227; }
+.deck-stats { font-size: 12px; color: #cbbf9a; font-weight: normal; margin-left: 8px; }
+.deck-errors { color: #e06c5a; font-size: 13px; margin: 4px 0; padding-left: 18px; }
+.ed-list { list-style: none; margin: 0; padding: 0; }
+.ed-row { display: flex; align-items: center; gap: 8px; padding: 3px 4px; border-bottom: 1px solid #ffffff11; font-size: 14px; }
+.ed-row-dim { opacity: 0.45; }
+.ed-add { width: 26px; height: 26px; flex: none; background: #2a2416; color: #e8dcc0; border: 1px solid #6b5a36; border-radius: 4px; cursor: pointer; }
+.ed-add:disabled { cursor: default; opacity: 0.4; }
+.ed-name { flex: 1; }
+.ed-meta { color: #9a8f74; font-size: 12px; }
+.ed-count { width: 40px; text-align: right; color: #cbbf9a; font-size: 12px; }
+.leader-list { margin-bottom: 8px; }

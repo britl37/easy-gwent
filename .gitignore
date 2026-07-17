@@ -1,1 +1,6 @@
 .git
+node_modules/
+dist/
+assets/cards/*.png
+*.tsbuildinfo
+.vite/

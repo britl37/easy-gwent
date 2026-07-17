@@ -1,0 +1,15 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`card database > locks per-faction card counts (update deliberately when adding cards) 1`] = `
+{
+  "leaders": 22,
+  "monsters": 37,
+  "neutral": 24,
+  "nilfgaard": 29,
+  "northern_realms": 25,
+  "scoiatael": 22,
+  "skellige": 26,
+  "totalCopies": 249,
+  "totalDefs": 185,
+}
+`;

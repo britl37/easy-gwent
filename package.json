@@ -1,0 +1,20 @@
+{
+  "name": "easy-gwent",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev -w @gwent/client",
+    "dev:server": "npm run dev -w @gwent/server",
+    "build": "npm run build --workspaces --if-present",
+    "test": "vitest run",
+    "fetch-assets": "node --experimental-strip-types scripts/fetch-assets.ts"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.4",
+    "vitest": "^2.1.9"
+  }
+}

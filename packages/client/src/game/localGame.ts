@@ -1,4 +1,4 @@
-import { chooseEasy } from '@gwent/ai';
+import { chooseEasy, chooseHard, chooseMedium, type Difficulty } from '@gwent/ai';
 import { ALL_CARDS, LEADER_CARDS, type PlayableFaction } from '@gwent/data';
 import {
   applyAction,
@@ -34,17 +34,31 @@ export function currentActor(s: GameState): PlayerId {
   return s.turn;
 }
 
-export function newLocalGame(seed: number, playerDeck: DeckList, aiDeck: DeckList): GameState {
-  return runAi(createGame(seed, [playerDeck, aiDeck]));
+const CHOOSERS = {
+  easy: chooseEasy,
+  medium: chooseMedium,
+  hard: chooseHard,
+} as const;
+
+export type { Difficulty };
+
+export function newLocalGame(
+  seed: number,
+  playerDeck: DeckList,
+  aiDeck: DeckList,
+  difficulty: Difficulty = 'easy',
+): GameState {
+  return runAi(createGame(seed, [playerDeck, aiDeck]), difficulty);
 }
 
 /** Let the AI act until control returns to the human (or the game ends). */
-function runAi(s: GameState): GameState {
+function runAi(s: GameState, difficulty: Difficulty): GameState {
+  const choose = CHOOSERS[difficulty];
   const rng = createRng((s.rngState ^ 0x9e3779b9) >>> 0);
   let steps = 0;
   while (s.phase !== 'finished' && currentActor(s) === AI) {
     if (++steps > 200) throw new Error('AI loop did not terminate');
-    s = applyAction(s, chooseEasy(s, AI, rng));
+    s = applyAction(s, choose(s, AI, rng));
   }
   return s;
 }
@@ -53,9 +67,9 @@ function runAi(s: GameState): GameState {
  * Apply a human action, then let the AI respond until it is the human's move again.
  * Returns the previous state unchanged if the action was illegal.
  */
-export function humanAct(s: GameState, action: Action): GameState {
+export function humanAct(s: GameState, action: Action, difficulty: Difficulty = 'easy'): GameState {
   try {
-    return runAi(applyAction(s, action));
+    return runAi(applyAction(s, action), difficulty);
   } catch (e) {
     if (e instanceof IllegalActionError) {
       console.warn('Illegal action ignored:', e.message);

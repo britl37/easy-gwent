@@ -42,6 +42,14 @@ export function effectiveStrength(state: GameState, player: PlayerId, row: Row, 
   ).length;
   s += morale;
 
+  // Eredin: Treacherous (passive) — doubles the strength of spy cards on your side
+  if (
+    def.abilities.includes('spy') &&
+    byId(state.players[player].leaderId).leaderAbility === 'eredin_treacherous'
+  ) {
+    s *= 2;
+  }
+
   // Commander's horn: special on row, or a horn-ability unit (not itself)
   const hornUnit = rowState.units.some(
     (u) => u.instanceId !== placed.instanceId && byId(u.cardId).abilities.includes('horn'),

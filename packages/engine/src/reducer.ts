@@ -151,8 +151,7 @@ function playUnit(s: GameState, rng: Rng, action: PlayCardAction, def: CardDef):
     const row = resolveRow(action, def);
     const target = otherPlayer(player);
     placeUnit(s, target, row, def.id);
-    const draws = byId(s.players[target].leaderId).leaderAbility === 'eredin_treacherous' ? 2 : 2;
-    for (let i = 0; i < draws && p.deck.length; i++) p.hand.push(p.deck.pop()!);
+    for (let i = 0; i < 2 && p.deck.length; i++) p.hand.push(p.deck.pop()!);
     log(s, `Player ${player + 1} plays spy ${def.name}`);
     return;
   }

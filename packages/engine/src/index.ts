@@ -6,3 +6,4 @@ export * from './setup.ts';
 export * from './view.ts';
 export { applyAction, isPassiveLeader, isLeaderCancelled } from './reducer.ts';
 export { legalActions } from './legal.ts';
+export * from './protocol.ts';

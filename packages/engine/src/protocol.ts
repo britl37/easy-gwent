@@ -27,7 +27,9 @@ export type ClientMsg =
   | { t: 'create_room'; deck: DeckList }
   | { t: 'join_room'; roomId: string; deck: DeckList }
   | { t: 'action'; action: Action }
-  | { t: 'leave' };
+  | { t: 'leave' }
+  /** Resume a seat in an active game after a dropped connection. */
+  | { t: 'rejoin'; roomId: string };
 
 /** Messages the server sends to the client. */
 export type ServerMsg =
@@ -49,7 +51,10 @@ export type ServerMsg =
       opponent: UserPublic;
     }
   | { t: 'error'; code: ProtocolErrorCode; message: string }
-  | { t: 'opponent_left' };
+  | { t: 'opponent_left' }
+  /** Opponent's socket dropped; they have `graceMs` to rejoin before forfeit. */
+  | { t: 'opponent_disconnected'; graceMs: number }
+  | { t: 'opponent_reconnected' };
 
 export type ProtocolErrorCode =
   | 'room_not_found'
@@ -63,4 +68,5 @@ export type ProtocolErrorCode =
   | 'auth_invalid'
   | 'username_taken'
   | 'bad_credentials'
-  | 'already_in_room';
+  | 'already_in_room'
+  | 'rejoin_failed';

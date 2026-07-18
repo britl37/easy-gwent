@@ -10,8 +10,10 @@ function defaultWsUrl(): string {
 }
 
 /**
- * Thin WebSocket wrapper.
- * Reconnect is for lobby only; once a game seat is held, disconnect ends the room server-side.
+ * Thin WebSocket wrapper with auto-reopen.
+ * When the socket re-opens after an unintended drop, `onReconnect` fires so the
+ * owner can re-authenticate and (mid-game) send `rejoin` — the server holds a
+ * disconnected seat for a grace period before forfeiting.
  * Last `state` is buffered so the game screen does not miss the first snapshot during navigation.
  */
 export class GwentSocket {
@@ -20,6 +22,9 @@ export class GwentSocket {
   private closedByUser = false;
   private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
   private lastState: GameState | null = null;
+  private everOpened = false;
+  /** Called after the socket re-opens following an unintended disconnect. */
+  onReconnect: (() => void) | null = null;
   readonly url: string;
 
   constructor(url: string = defaultWsUrl()) {
@@ -40,6 +45,11 @@ export class GwentSocket {
     }
     const ws = new WebSocket(this.url);
     this.ws = ws;
+    ws.onopen = () => {
+      const isReconnect = this.everOpened;
+      this.everOpened = true;
+      if (isReconnect) this.onReconnect?.();
+    };
     ws.onmessage = (ev) => {
       try {
         const msg = JSON.parse(String(ev.data)) as ServerMsg;
@@ -75,6 +85,7 @@ export class GwentSocket {
   close(): void {
     this.closedByUser = true;
     if (this.reconnectTimer) clearTimeout(this.reconnectTimer);
+    this.onReconnect = null;
     this.ws?.close();
     this.ws = null;
     this.lastState = null;

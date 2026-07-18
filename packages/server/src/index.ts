@@ -44,7 +44,12 @@ interface RoomMeta {
   usernames: [string | null, string | null];
   seats: [WebSocket | null, WebSocket | null];
   matchRecorded: boolean;
+  /** Per-seat forfeit timers while a player is disconnected mid-game. */
+  disconnectTimers: [NodeJS.Timeout | null, NodeJS.Timeout | null];
 }
+
+/** How long a disconnected player has to rejoin before forfeiting. */
+const RECONNECT_GRACE_MS = Number(process.env.GWENT_GRACE_MS ?? 60_000);
 
 const connByWs = new Map<WebSocket, ConnState>();
 const roomMeta = new Map<string, RoomMeta>();
@@ -151,6 +156,22 @@ function recordForfeit(roomId: string, leaverSeat: PlayerId): void {
   sendMatchResults(roomId, outcome, result.p0, result.p1);
 }
 
+/** Tear down a room: cancel any pending forfeit timers, drop state + meta. */
+function destroyRoom(roomId: string): void {
+  const meta = roomMeta.get(roomId);
+  if (meta) {
+    for (const seat of [0, 1] as const) {
+      const timer = meta.disconnectTimers[seat];
+      if (timer) {
+        clearTimeout(timer);
+        meta.disconnectTimers[seat] = null;
+      }
+    }
+  }
+  rooms.remove(roomId);
+  roomMeta.delete(roomId);
+}
+
 function bindSeat(ws: WebSocket, roomId: string, seat: PlayerId, userId: string, username: string): void {
   let meta = roomMeta.get(roomId);
   if (!meta) {
@@ -159,8 +180,14 @@ function bindSeat(ws: WebSocket, roomId: string, seat: PlayerId, userId: string,
       usernames: [null, null],
       seats: [null, null],
       matchRecorded: false,
+      disconnectTimers: [null, null],
     };
     roomMeta.set(roomId, meta);
+  }
+  const timer = meta.disconnectTimers[seat];
+  if (timer) {
+    clearTimeout(timer);
+    meta.disconnectTimers[seat] = null;
   }
   meta.seats[seat] = ws;
   meta.userIds[seat] = userId;
@@ -197,8 +224,7 @@ function clearSeat(ws: WebSocket, opts: { sendLeave?: boolean } = {}): void {
     send(other, { t: 'opponent_left' });
   }
 
-  rooms.remove(roomId);
-  roomMeta.delete(roomId);
+  destroyRoom(roomId);
 
   conn.seat = null;
   conn.roomId = null;
@@ -210,6 +236,55 @@ function clearSeat(ws: WebSocket, opts: { sendLeave?: boolean } = {}): void {
       oc.roomId = null;
     }
   }
+}
+
+/**
+ * Socket dropped without an explicit `leave`.
+ * If a started game is in progress, hold the seat for RECONNECT_GRACE_MS
+ * so the player can rejoin; otherwise tear down immediately (old behavior).
+ */
+function handleDisconnect(ws: WebSocket): void {
+  const conn = connByWs.get(ws);
+  if (!conn || conn.seat === null || !conn.roomId) {
+    clearSeat(ws);
+    return;
+  }
+  const roomId = conn.roomId;
+  const seat = conn.seat;
+  const meta = roomMeta.get(roomId);
+  const room = rooms.get(roomId);
+
+  // No active game (waiting for opponent, or already finished/recorded) →
+  // no reason to hold the seat.
+  if (!room?.state || !meta || meta.matchRecorded) {
+    clearSeat(ws);
+    return;
+  }
+
+  if (meta.seats[seat] === ws) meta.seats[seat] = null;
+  conn.seat = null;
+  conn.roomId = null;
+
+  const other = meta.seats[1 - seat];
+  if (other && other.readyState === other.OPEN) {
+    send(other, { t: 'opponent_disconnected', graceMs: RECONNECT_GRACE_MS });
+  }
+
+  meta.disconnectTimers[seat] = setTimeout(() => {
+    const m = roomMeta.get(roomId);
+    if (!m) return;
+    m.disconnectTimers[seat] = null;
+    if (m.seats[seat]) return; // player rejoined in time
+    recordForfeit(roomId, seat);
+    const o = m.seats[1 - seat];
+    if (o && o.readyState === o.OPEN) send(o, { t: 'opponent_left' });
+    const oc = o ? connByWs.get(o) : undefined;
+    if (oc) {
+      oc.seat = null;
+      oc.roomId = null;
+    }
+    destroyRoom(roomId);
+  }, RECONNECT_GRACE_MS);
 }
 
 function requireAuth(ws: WebSocket): ConnState | null {
@@ -331,6 +406,47 @@ function handleMessage(ws: WebSocket, raw: string): void {
 
     case 'leave': {
       clearSeat(ws);
+      return;
+    }
+
+    case 'rejoin': {
+      const conn = requireAuth(ws);
+      if (!conn) return;
+      if (conn.seat !== null) {
+        error(ws, 'already_in_room', 'Already in a room');
+        return;
+      }
+      const meta = roomMeta.get(msg.roomId);
+      const room = rooms.get(msg.roomId);
+      if (!meta || !room?.state || meta.matchRecorded) {
+        error(ws, 'rejoin_failed', 'Game no longer available');
+        return;
+      }
+      const seatIdx = meta.userIds.findIndex((id) => id !== null && id === conn.userId);
+      if (seatIdx === -1) {
+        error(ws, 'rejoin_failed', 'You are not a player in this room');
+        return;
+      }
+      const seat = seatIdx as PlayerId;
+      const existing = meta.seats[seat];
+      if (existing && existing !== ws && existing.readyState === existing.OPEN) {
+        error(ws, 'rejoin_failed', 'Seat is already connected');
+        return;
+      }
+      bindSeat(ws, msg.roomId, seat, conn.userId!, conn.username!); // cancels forfeit timer
+      const oppDeck = room.decks[1 - seat]!;
+      send(ws, {
+        t: 'joined',
+        roomId: msg.roomId,
+        you: seat,
+        opponentFaction: oppDeck.faction,
+        opponentUsername: meta.usernames[1 - seat] ?? 'Opponent',
+      });
+      send(ws, { t: 'state', state: redactState(room.state, seat) });
+      const other = meta.seats[1 - seat];
+      if (other && other.readyState === other.OPEN) {
+        send(other, { t: 'opponent_reconnected' });
+      }
       return;
     }
 
@@ -549,12 +665,12 @@ wss.on('connection', (ws) => {
   });
 
   ws.on('close', () => {
-    clearSeat(ws);
+    handleDisconnect(ws);
     connByWs.delete(ws);
   });
 
   ws.on('error', () => {
-    clearSeat(ws);
+    handleDisconnect(ws);
     connByWs.delete(ws);
   });
 });

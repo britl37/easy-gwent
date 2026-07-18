@@ -12,6 +12,7 @@ import { Board } from '../components/Board.tsx';
 import { CarouselPicker } from '../components/CarouselPicker.tsx';
 import { Hand } from '../components/Hand.tsx';
 import { LogPanel, StatusColumn } from '../components/SidePanel.tsx';
+import { getToken } from '../net/auth.ts';
 import type { MultiplayerSession } from './Lobby.tsx';
 
 export function MultiplayerGameScreen({
@@ -38,7 +39,30 @@ export function MultiplayerGameScreen({
         return;
       }
       if (msg.t === 'error') {
+        if (msg.code === 'rejoin_failed') {
+          setOpponentLeft(true);
+          setBanner('Could not resume the game — it is no longer available.');
+          return;
+        }
         setBanner(`${msg.code}: ${msg.message}`);
+        return;
+      }
+      if (msg.t === 'authed') {
+        // Re-authenticated after a dropped connection: resume our seat.
+        session.socket.send({ t: 'rejoin', roomId: session.roomId });
+        return;
+      }
+      if (msg.t === 'joined') {
+        // Rejoin acknowledged; a fresh state snapshot follows.
+        setBanner(null);
+        return;
+      }
+      if (msg.t === 'opponent_disconnected') {
+        setBanner(`Opponent disconnected — waiting up to ${Math.round(msg.graceMs / 1000)}s for them to reconnect…`);
+        return;
+      }
+      if (msg.t === 'opponent_reconnected') {
+        setBanner('Opponent reconnected.');
         return;
       }
       if (msg.t === 'opponent_left') {
@@ -55,6 +79,13 @@ export function MultiplayerGameScreen({
       }
     };
     session.socket.connect(onMsg);
+    session.socket.onReconnect = () => {
+      const token = getToken();
+      if (token) {
+        setBanner('Connection lost — reconnecting…');
+        session.socket.send({ t: 'auth', token });
+      }
+    };
     return () => {
       session.socket.send({ t: 'leave' });
       session.socket.close();

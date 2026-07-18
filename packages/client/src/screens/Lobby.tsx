@@ -79,6 +79,13 @@ export function LobbyScreen({
       }
     });
 
+    // Re-authenticate if the socket drops and reopens while in the lobby.
+    sock.onReconnect = () => {
+      setAuthed(false);
+      setStatus('Reconnecting…');
+      sock.send({ t: 'auth', token });
+    };
+
     // Auth as soon as the socket is open (poll briefly).
     const tryAuth = () => {
       if (sock.ready) {

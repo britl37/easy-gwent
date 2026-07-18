@@ -115,7 +115,7 @@ body::before {
 /* ---- game layout ---- */
 .game-screen {
   display: grid; grid-template-columns: 190px 1fr 230px; gap: 8px;
-  height: 100vh; padding: 10px; background: linear-gradient(180deg, #1a1208aa 0%, #0a0804cc 100%);
+  height: 100dvh; padding: 10px; background: linear-gradient(180deg, #1a1208aa 0%, #0a0804cc 100%);
 }
 .game-center { display: flex; flex-direction: column; min-width: 0; }
 
@@ -281,7 +281,7 @@ body::before {
 
 /* ---- Deck editor ---- */
 .deck-editor {
-  display: flex; flex-direction: column; height: 100vh; padding: 12px 16px; gap: 12px;
+  display: flex; flex-direction: column; height: 100dvh; padding: 12px 16px; gap: 12px;
   box-sizing: border-box; overflow: hidden;
 }
 .editor-topbar { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
@@ -313,4 +313,52 @@ body::before {
 .reduce-motion *, .reduce-motion *::before, .reduce-motion *::after {
   animation-duration: 0.01ms !important;
   transition-duration: 0.01ms !important;
+}
+
+/* ---- Mobile (portrait phones / narrow viewports) ---- */
+@media (max-width: 760px) {
+  /* Game screen: 3-col grid -> vertical stack */
+  .game-screen {
+    display: flex; flex-direction: column; gap: 6px; padding: 6px;
+    padding-top: calc(6px + env(safe-area-inset-top));
+    padding-bottom: calc(6px + env(safe-area-inset-bottom));
+  }
+  /* Status column becomes a horizontal strip */
+  .status-col { flex-direction: row; align-items: stretch; gap: 6px; }
+  .status-col .seat { flex: 1; padding: 4px 6px; gap: 2px; }
+  .status-col .weather-box, .status-col .round-info { font-size: 11px; }
+  .game-center { flex: 1; min-height: 0; }
+  /* Side panel: compact horizontal preview + info, no log */
+  .side-panel { flex-direction: row; gap: 6px; min-height: 0; }
+  .preview-slot { height: 132px; flex: 0 0 auto; }
+  .card-info { max-height: 124px; flex: 1; }
+  .card-info-flavor { display: none; }
+  .side-panel .log { display: none; }
+  /* Smaller cards & badges */
+  .card-row { height: 56px; }
+  .card-hand { height: 92px; }
+  .card-big { height: 176px; }
+  .row-badge { min-width: 28px; height: 28px; font-size: 13px; }
+  .half-score { font-size: 14px; }
+  .board-row { gap: 4px; padding: 1px 3px; }
+  .hand { gap: 4px; }
+  /* Touch targets */
+  .btn { min-height: 40px; }
+  .btn-small { min-height: 32px; }
+  /* Carousel picker fits the screen */
+  .carousel { max-width: 96vw; }
+  .carousel-cards { gap: 8px; padding: 8px; }
+  /* Deck editor: stack panes */
+  .deck-editor { padding: 8px; overflow-y: auto; }
+  .editor-columns { flex-direction: column; overflow-y: auto; }
+  .editor-pane { min-height: 220px; flex: none; max-height: 45dvh; }
+  /* Menu / lobby */
+  .join-row { flex-wrap: wrap; justify-content: center; }
+  .leaderboard-box { width: 96%; }
+}
+
+/* Hover-preview is meaningless on touch; selection still previews */
+@media (hover: none) {
+  .card-clickable:hover { transform: none; }
+  .preview-empty::after { content: " (tap a card)"; }
 }

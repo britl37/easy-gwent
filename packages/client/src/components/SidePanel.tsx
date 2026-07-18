@@ -1,4 +1,4 @@
-import { byId } from '@gwent/data';
+import { byId, getCardText } from '@gwent/data';
 import type { GameState, PlayerId, WeatherKind } from '@gwent/engine';
 import { Card } from './Card.tsx';
 
@@ -58,10 +58,70 @@ export function StatusColumn({
   );
 }
 
-export function LogPanel({ state, previewCardId }: { state: GameState; previewCardId: string | null }) {
+export function LogPanel({
+  state,
+  previewCardId,
+  selected,
+  canPlaySelected,
+  playHint,
+  onConfirmPlay,
+}: {
+  state: GameState;
+  previewCardId: string | null;
+  /** True when a hand card is actively selected (not just hovered). */
+  selected?: boolean;
+  /** Selected card has a legal play and can be confirmed. */
+  canPlaySelected?: boolean;
+  /** e.g. "Click a highlighted row" */
+  playHint?: string | null;
+  /** Click the big card art to confirm play when possible. */
+  onConfirmPlay?: () => void;
+}) {
+  const def = previewCardId
+    ? (() => {
+        try {
+          return byId(previewCardId);
+        } catch {
+          return null;
+        }
+      })()
+    : null;
+  const text = def ? getCardText(def) : null;
+  const confirmable = !!(selected && canPlaySelected && onConfirmPlay);
+
   return (
     <div className="side-panel">
-      <div className="preview-slot">{previewCardId && <Card cardId={previewCardId} size="big" />}</div>
+      <div className={`preview-slot ${confirmable ? 'preview-confirmable' : ''} ${selected ? 'preview-selected' : ''}`}>
+        {previewCardId && (
+          <Card
+            cardId={previewCardId}
+            size="big"
+            onClick={confirmable ? onConfirmPlay : undefined}
+          />
+        )}
+        {!previewCardId && <div className="preview-empty">Hover or select a card</div>}
+      </div>
+
+      {def && text && (
+        <div className="card-info">
+          <div className="card-info-name">{def.name}</div>
+          {text.flavor && <div className="card-info-flavor">“{text.flavor}”</div>}
+          <div className="card-info-ability">{text.ability}</div>
+          {selected && (
+            <div className="card-info-hint">
+              {canPlaySelected
+                ? playHint ?? 'Click the card art above to play'
+                : playHint ?? 'Cannot play this card right now'}
+            </div>
+          )}
+          {confirmable && (
+            <button className="btn btn-primary btn-play-confirm" onClick={onConfirmPlay}>
+              Play card
+            </button>
+          )}
+        </div>
+      )}
+
       <div className="log">
         {state.log.slice(-30).map((e, i) => (
           <div key={i} className="log-entry">

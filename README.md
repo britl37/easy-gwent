@@ -9,46 +9,45 @@ online multiplayer with accounts + leaderboard.
 
 | Package | Role |
 |---------|------|
-| `@gwent/data` | Card definitions |
+| `@gwent/data` | Card definitions + **committed ability/flavor text** |
 | `@gwent/engine` | Pure game rules + multiplayer protocol types |
 | `@gwent/ai` | Easy / medium / hard heuristics |
 | `@gwent/client` | React UI (Vite) |
 | `@gwent/server` | HTTP + WebSocket + SQLite (auth, rooms, stats) |
 
-## Card art (no copyrighted binaries in git)
+## Card text vs card art
 
-Art is fetched **at build time** from Witcher wiki URLs listed in
-`scripts/asset-manifest.json`. Only that URL map is committed.
+| | In git? | Notes |
+|--|---------|--------|
+| **Ability / flavor text** | **Yes** — `packages/data/src/card-text.json` | Plain text. Refresh rarely with `npm run build-card-text` (not part of build). |
+| **Card images** | **No** | Fetched at **build time** via `scripts/asset-manifest.json` → `assets/cards/` (gitignored). |
 
 ```bash
-npm run build          # fetch-assets (wiki → assets/cards/) then build packages
-npm run build:code     # packages only, skip download
-npm run fetch-assets   # download only (resumable)
-npm run build-manifest # regenerate URL map after adding cards (commit the JSON)
+npm run build            # fetch missing images + build packages
+npm run build:code       # packages only (skip image download)
+npm run fetch-assets     # images only
+npm run build-manifest   # rare: regenerate image URL map
+npm run build-card-text  # rare: refresh text JSON from wiki, then commit it
 ```
 
-`assets/cards/*` is gitignored. The UI falls back to SVG placeholders if a file
-is missing.
+Missing images → SVG placeholders. Missing text → engine-generated ability rules.
 
 ## Develop
 
 ```bash
 npm install
 npm test
-npm run dev:server   # terminal 1 — :8787
-npm run dev          # terminal 2 — Vite :5173 (proxies /api + WS)
+npm run dev:server   # :8787
+npm run dev          # Vite :5173
 ```
-
-Optional: `npm run fetch-assets` once so local play shows real card faces.
 
 ## Deploy (VPS)
 
 ```bash
 git pull
 npm install
-npm run build          # pulls art from wiki, then vite build
+npm run build
 sudo systemctl restart easy-gwent
 ```
 
 App binds `127.0.0.1:8787`; Caddy terminates TLS for `easygwent.online`.
-Do not commit anything under `assets/cards/`.

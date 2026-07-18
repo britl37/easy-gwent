@@ -1,4 +1,4 @@
-import { byId, type PlayableFaction, type Row } from '@gwent/data';
+import type { PlayableFaction, Row } from '@gwent/data';
 import { legalActions, type Action, type GameState, type PlayCardAction } from '@gwent/engine';
 import { useMemo, useState } from 'react';
 import { Board } from '../components/Board.tsx';
@@ -20,7 +20,7 @@ export function GameScreen({ faction, aiFaction, difficulty, onExit }: GameScree
     newLocalGame(Date.now() >>> 0, loadDeck(faction), starterDeck(aiFaction), difficulty),
   );
   const [selected, setSelected] = useState<number | null>(null);
-  const [preview, setPreview] = useState<string | null>(null);
+  const [hoverId, setHoverId] = useState<string | null>(null);
 
   const me = state.players[HUMAN];
   const myMove =
@@ -39,7 +39,6 @@ export function GameScreen({ faction, aiFaction, difficulty, onExit }: GameScree
     setState((s) => humanAct(s, a, difficulty));
   };
 
-  // Legal PLAY_CARD actions for the currently selected hand card.
   const selectedPlays = useMemo<PlayCardAction[]>(() => {
     if (selected === null) return [];
     return legal.filter((a): a is PlayCardAction => a.type === 'PLAY_CARD' && a.handIndex === selected);
@@ -51,32 +50,57 @@ export function GameScreen({ faction, aiFaction, difficulty, onExit }: GameScree
     return set;
   }, [legal, myMove]);
 
+  /** First click: select + show panel. Never auto-plays. */
   const onHandClick = (i: number) => {
-    if (!myMove) return;
     if (selected === i) {
       setSelected(null);
       return;
     }
-    const plays = legal.filter((a): a is PlayCardAction => a.type === 'PLAY_CARD' && a.handIndex === i);
-    if (plays.length === 1) dispatch(plays[0]!);
-    else if (plays.length > 1) setSelected(i); // needs a row / decoy target
+    setSelected(i);
+  };
+
+  const multiRow =
+    selectedPlays.length > 1 && selectedPlays.every((p) => p.row && !p.targetInstanceId);
+  const decoyTargets = selectedPlays.some((p) => p.targetInstanceId);
+
+  // Exactly one legal play with no decoy target → confirm from the big preview.
+  const canPlaySelected =
+    myMove && selected !== null && selectedPlays.length === 1 && !selectedPlays[0]!.targetInstanceId;
+
+  const playHint =
+    selected === null
+      ? null
+      : !myMove
+        ? 'Not your turn'
+        : selectedPlays.length === 0
+          ? 'This card cannot be played right now'
+          : decoyTargets
+            ? 'Click one of your non-hero units to decoy'
+            : multiRow
+              ? 'Click a highlighted row to place this card'
+              : selectedPlays.length === 1
+                ? 'Click the card art (or Play) to confirm'
+                : 'Click a highlighted target on the board';
+
+  const confirmPlay = () => {
+    if (!canPlaySelected || !selectedPlays[0]) return;
+    dispatch(selectedPlays[0]);
   };
 
   const targetRows = useMemo<Row[]>(() => {
+    if (selected === null || !myMove) return [];
     const rows = new Set<Row>();
     for (const a of selectedPlays) if (a.row && a.targetInstanceId === undefined) rows.add(a.row);
     return [...rows];
-  }, [selectedPlays]);
+  }, [selectedPlays, selected, myMove]);
 
   const targetInstanceIds = useMemo(
-    () => selectedPlays.flatMap((a) => (a.targetInstanceId ? [a.targetInstanceId] : [])),
-    [selectedPlays],
+    () => (myMove ? selectedPlays.flatMap((a) => (a.targetInstanceId ? [a.targetInstanceId] : [])) : []),
+    [selectedPlays, myMove],
   );
 
   const canPass = myMove && legal.some((a) => a.type === 'PASS');
   const canLeader = myMove && legal.some((a) => a.type === 'PLAY_LEADER');
-
-  // ---- modal choices -------------------------------------------------------
 
   const redrawing = state.phase === 'redraw' && me.redrawsLeft > 0;
   const medic = state.pendingChoice?.kind === 'medic' && state.pendingChoice.player === HUMAN ? state.pendingChoice : null;
@@ -89,6 +113,8 @@ export function GameScreen({ faction, aiFaction, difficulty, onExit }: GameScree
         ? 'You won!'
         : 'You lost.'
     : null;
+
+  const panelCardId = selected !== null ? me.hand[selected]! : hoverId;
 
   return (
     <div className="game-screen">
@@ -112,7 +138,7 @@ export function GameScreen({ faction, aiFaction, difficulty, onExit }: GameScree
             const a = selectedPlays.find((p) => p.targetInstanceId === instanceId);
             if (a) dispatch(a);
           }}
-          onHover={setPreview}
+          onHover={setHoverId}
         />
         <div className="hand-bar">
           <Hand
@@ -120,14 +146,21 @@ export function GameScreen({ faction, aiFaction, difficulty, onExit }: GameScree
             playableIndexes={playableIndexes}
             selectedIndex={selected}
             onCardClick={onHandClick}
-            onHover={setPreview}
+            onHover={setHoverId}
           />
           <button className="btn btn-pass" disabled={!canPass} onClick={() => dispatch({ type: 'PASS', player: HUMAN })}>
             Pass
           </button>
         </div>
       </div>
-      <LogPanel state={state} previewCardId={preview} />
+      <LogPanel
+        state={state}
+        previewCardId={panelCardId}
+        selected={selected !== null}
+        canPlaySelected={canPlaySelected}
+        playHint={playHint}
+        onConfirmPlay={canPlaySelected ? confirmPlay : undefined}
+      />
 
       {redrawing && (
         <CarouselPicker

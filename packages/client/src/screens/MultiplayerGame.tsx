@@ -24,7 +24,7 @@ export function MultiplayerGameScreen({
   const human = session.you;
   const [state, setState] = useState<GameState | null>(null);
   const [selected, setSelected] = useState<number | null>(null);
-  const [preview, setPreview] = useState<string | null>(null);
+  const [hoverId, setHoverId] = useState<string | null>(null);
   const [banner, setBanner] = useState<string | null>(null);
   const [matchLine, setMatchLine] = useState<string | null>(null);
   const [updatedUser, setUpdatedUser] = useState<UserPublic | null>(null);
@@ -93,25 +93,49 @@ export function MultiplayerGameScreen({
   }, [legal, myMove]);
 
   const onHandClick = (i: number) => {
-    if (!myMove) return;
     if (selected === i) {
       setSelected(null);
       return;
     }
-    const plays = legal.filter((a): a is PlayCardAction => a.type === 'PLAY_CARD' && a.handIndex === i);
-    if (plays.length === 1) dispatch(plays[0]!);
-    else if (plays.length > 1) setSelected(i);
+    setSelected(i);
+  };
+
+  const multiRow =
+    selectedPlays.length > 1 && selectedPlays.every((p) => p.row && !p.targetInstanceId);
+  const decoyTargets = selectedPlays.some((p) => p.targetInstanceId);
+  const canPlaySelected =
+    myMove && selected !== null && selectedPlays.length === 1 && !selectedPlays[0]!.targetInstanceId;
+
+  const playHint =
+    selected === null
+      ? null
+      : !myMove
+        ? 'Not your turn'
+        : selectedPlays.length === 0
+          ? 'This card cannot be played right now'
+          : decoyTargets
+            ? 'Click one of your non-hero units to decoy'
+            : multiRow
+              ? 'Click a highlighted row to place this card'
+              : selectedPlays.length === 1
+                ? 'Click the card art (or Play) to confirm'
+                : 'Click a highlighted target on the board';
+
+  const confirmPlay = () => {
+    if (!canPlaySelected || !selectedPlays[0]) return;
+    dispatch(selectedPlays[0]);
   };
 
   const targetRows = useMemo<Row[]>(() => {
+    if (selected === null || !myMove) return [];
     const rows = new Set<Row>();
     for (const a of selectedPlays) if (a.row && a.targetInstanceId === undefined) rows.add(a.row);
     return [...rows];
-  }, [selectedPlays]);
+  }, [selectedPlays, selected, myMove]);
 
   const targetInstanceIds = useMemo(
-    () => selectedPlays.flatMap((a) => (a.targetInstanceId ? [a.targetInstanceId] : [])),
-    [selectedPlays],
+    () => (myMove ? selectedPlays.flatMap((a) => (a.targetInstanceId ? [a.targetInstanceId] : [])) : []),
+    [selectedPlays, myMove],
   );
 
   const canPass = myMove && legal.some((a) => a.type === 'PASS');
@@ -174,7 +198,7 @@ export function MultiplayerGameScreen({
             const a = selectedPlays.find((p) => p.targetInstanceId === instanceId);
             if (a) dispatch(a);
           }}
-          onHover={setPreview}
+          onHover={setHoverId}
         />
         <div className="hand-bar">
           <Hand
@@ -182,7 +206,7 @@ export function MultiplayerGameScreen({
             playableIndexes={playableIndexes}
             selectedIndex={selected}
             onCardClick={onHandClick}
-            onHover={setPreview}
+            onHover={setHoverId}
           />
           <button
             className="btn btn-pass"
@@ -193,7 +217,14 @@ export function MultiplayerGameScreen({
           </button>
         </div>
       </div>
-      <LogPanel state={state} previewCardId={preview} />
+      <LogPanel
+        state={state}
+        previewCardId={selected !== null ? me.hand[selected]! : hoverId}
+        selected={selected !== null}
+        canPlaySelected={!!canPlaySelected}
+        playHint={playHint}
+        onConfirmPlay={canPlaySelected ? confirmPlay : undefined}
+      />
 
       {redrawing && (
         <CarouselPicker

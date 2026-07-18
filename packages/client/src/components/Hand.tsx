@@ -5,6 +5,7 @@ export interface HandProps {
   /** Hand indexes that currently have at least one legal play. */
   playableIndexes: Set<number>;
   selectedIndex: number | null;
+  /** Always called on click — selection / inspect, not auto-play. */
   onCardClick: (index: number) => void;
   onHover?: (cardId: string | null) => void;
 }
@@ -19,7 +20,7 @@ export function Hand({ cardIds, playableIndexes, selectedIndex, onCardClick, onH
           size="hand"
           selected={selectedIndex === i}
           dimmed={!playableIndexes.has(i)}
-          onClick={playableIndexes.has(i) ? () => onCardClick(i) : undefined}
+          onClick={() => onCardClick(i)}
           onHover={onHover}
         />
       ))}

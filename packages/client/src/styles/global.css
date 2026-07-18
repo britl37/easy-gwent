@@ -226,12 +226,38 @@ body::before {
 /* ---- side panel ---- */
 .side-panel { display: flex; flex-direction: column; gap: 8px; min-height: 0; }
 .preview-slot {
-  height: 264px; display: flex; justify-content: center;
+  height: 264px; display: flex; justify-content: center; align-items: center;
   background: #00000033; border-radius: 8px; border: 1px solid #3a2f1e; padding: 4px;
+  position: relative;
 }
+.preview-selected { border-color: #c9a22788; }
+.preview-confirmable {
+  border-color: #c9a227;
+  box-shadow: 0 0 12px #c9a22744;
+  cursor: pointer;
+}
+.preview-empty { color: #8a7c60; font-size: 13px; text-align: center; padding: 12px; }
+.card-info {
+  background: linear-gradient(180deg, #1a140ccc, #0e0a08ee);
+  border: 1px solid #4a3a24; border-radius: 8px; padding: 10px 12px;
+  display: flex; flex-direction: column; gap: 6px; max-height: 220px; overflow-y: auto;
+}
+.card-info-name {
+  font-family: 'Cinzel', Georgia, serif; color: #c9a227; font-size: 15px; letter-spacing: 0.04em;
+}
+.card-info-flavor {
+  font-style: italic; color: #9a8f74; font-size: 12px; line-height: 1.35;
+}
+.card-info-ability {
+  color: #e8dcc0; font-size: 12px; line-height: 1.4; white-space: pre-wrap;
+}
+.card-info-hint {
+  color: #c9a227; font-size: 12px; margin-top: 2px;
+}
+.btn-play-confirm { width: 100%; margin-top: 4px; font-size: 14px; padding: 8px; }
 .log {
   flex: 1; overflow-y: auto; background: #00000055; border: 1px solid #3a2f1e;
-  border-radius: 8px; padding: 8px; font-size: 12px;
+  border-radius: 8px; padding: 8px; font-size: 12px; min-height: 80px;
 }
 .log-entry { padding: 3px 0; border-bottom: 1px solid #ffffff11; color: #b8a988; }
 

@@ -8,6 +8,7 @@ import { SKELLIGE_CARDS } from './cards/skellige.ts';
 import { LEADER_CARDS } from './cards/leaders.ts';
 
 export * from './types.ts';
+export * from './ability-text.ts';
 export {
   NEUTRAL_CARDS,
   NORTHERN_REALMS_CARDS,

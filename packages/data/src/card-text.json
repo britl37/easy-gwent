@@ -1,0 +1,622 @@
+{
+  "ne_geralt": {
+    "flavor": "If that's what it takes to save the world, it'd better to let that world die."
+  },
+  "ne_ciri": {
+    "flavor": "Know when fairy tales cease to be tales? When people start believing in them."
+  },
+  "ne_yennefer": {
+    "ability": "Medic: Choose one card from your discard pile and play it instantly (no Heroes or Special Cards). Hero: Not affected by any Special Cards or abilities.",
+    "flavor": "Magic is Chaos, Art and Science. It is a curse, a blessing and a progression."
+  },
+  "ne_triss": {
+    "ability": "Hero: Not affected by any Special Cards or abilities.",
+    "flavor": "I can take care of myself. Trust me."
+  },
+  "ne_mysterious_elf": {
+    "ability": "Spy: Place on your opponent's battlefield (counts towards opponent's total) and draw 2 cards from your deck. Hero: Not affected by any Special Cards or abilities.",
+    "flavor": "You humans have... unusual tastes."
+  },
+  "ne_dandelion": {
+    "ability": "Commander's Horn: Doubles the strength of all unit cards in that row. Limited to 1 per row.",
+    "flavor": "Dandelion, you're a cynic, a lecher, a whoremonger, a liar - and my best friend."
+  },
+  "ne_zoltan": {
+    "flavor": "Life without old mates and booze is like a woman without a rump."
+  },
+  "ne_regis": {
+    "flavor": "Men, the polite ones, at least, would call me a monster. A blood-drinking freak."
+  },
+  "ne_villentretenmerth": {
+    "ability": "Scorch - Close Combat: Destroy your enemy's strongest Close Combat unit(s) if the combined strength of all his or her Close Combat units is 10 or more.",
+    "flavor": "Also calls himself Borkh Three Jackdaws... he's not the best at names."
+  },
+  "ne_vesemir": {
+    "flavor": "If you're to be hanged, ask for water. Anything can happen before they fetch it."
+  },
+  "ne_olgierd": {
+    "ability": "Morale boost: Adds +1 to all units in the row (excluding itself). Agile: Can be placed in either the Close Combat or the Ranged Combat row. Cannot be moved once placed.",
+    "flavor": "At least you now know I don't easily lose my head"
+  },
+  "ne_gaunter_odimm": {
+    "ability": "Muster: Find any cards with the same name in your deck and play them instantly.",
+    "flavor": "He always grants exactly what you wish for. That's the problem."
+  },
+  "ne_gaunter_darkness": {
+    "ability": "Muster: Find any cards with the same name in your deck and play them instantly.",
+    "flavor": "Fear not the shadows, but the light."
+  },
+  "ne_cow": {
+    "flavor": "Grrrrr!"
+  },
+  "ne_decoy": {
+    "ability": "Swap with a card on the battlefield to return it to your hand.",
+    "flavor": "When you run out of peasants, decoys also make decent arrow fodder."
+  },
+  "ne_horn": {
+    "ability": "Doubles the strength of all unit cards in that row. Limited to 1 per row.",
+    "flavor": "Plus one to morale, minus three to hearing."
+  },
+  "ne_scorch": {
+    "ability": "Scorch: Discards after playing. Kills the strongest card(s) on the battlefield.",
+    "flavor": "Pillars of flame turn the mightiest to ash. All others tremble in shock and awe."
+  },
+  "ne_frost": {
+    "ability": "Sets the strength of all Close Combat cards to 1 for both players.",
+    "flavor": "Best part about frost - bodies of the fallen don't rot so quickly."
+  },
+  "ne_fog": {
+    "ability": "Sets the strength of all Ranged Combat cards to 1 for both players.",
+    "flavor": "A good commander's dream... a bad one's horror."
+  },
+  "ne_rain": {
+    "ability": "Sets the strength of all Siege Combat cards to 1 for both players.",
+    "flavor": "Even the rain in this land smells like piss."
+  },
+  "ne_storm": {
+    "ability": "Reduces the Strength of all Range and Siege Units to 1.",
+    "flavor": "This ain't no normal storm. This here's the wrath of the gods."
+  },
+  "ne_clear": {
+    "ability": "Removes all Weather Card (Biting Frost, Impenetrable Fog and Torrential Rain) effects.",
+    "flavor": "The sun's shinin', Dromle! The sun's shinin'! Maybe there's hope left after all..."
+  },
+  "nr_vernon_roche": {
+    "ability": "Hero: Not affected by any Special Cards or abilities.",
+    "flavor": "A patriot... and a real son of a bitch."
+  },
+  "nr_john_natalis": {
+    "ability": "Hero: Not affected by any Special Cards or abilities.",
+    "flavor": "That square should bear the names of my soldiers, of the dead. Not mine."
+  },
+  "nr_esterad_thyssen": {
+    "ability": "Hero: Not affected by any Special Cards or abilities.",
+    "flavor": "Like all Thyssen men, he was tall, powerfully built and criminally handsome."
+  },
+  "nr_philippa_eilhart": {
+    "ability": "Hero: Not affected by any Special Cards or abilities.",
+    "flavor": "Soon the power of kings will wither, and the Lodge shall seize its rightful place."
+  },
+  "nr_thaler": {
+    "ability": "Spy: Place on your opponent's battlefield (counts towards opponent's total) and draw 2 cards from your deck.",
+    "flavor": "Fuck off! We aren't all ploughin' philanderers. Some of us have depth..."
+  },
+  "nr_dijkstra": {
+    "ability": "Spy: Place on your opponent's battlefield (counts towards opponent's total) and draw 2 cards from your deck.",
+    "flavor": "Gwent's like politics, just more honest."
+  },
+  "nr_stennis": {
+    "ability": "Spy: Place on your opponent's battlefield (counts towards opponent's total) and draw 2 cards from your deck.",
+    "flavor": "He ploughin' wears golden armor. Golden. 'Course he's an arsehole."
+  },
+  "nr_ves": {
+    "flavor": "Better to live one day as a king than a whole life as a beggar."
+  },
+  "nr_siegfried": {
+    "flavor": "We're on the same side, witcher. You'll realize this one day."
+  },
+  "nr_yarpen": {
+    "flavor": "The world belongs to whoever's best at crackin' skulls and impregnatin' lasses."
+  },
+  "nr_sile": {
+    "flavor": "The Lodge lacks humility. Our lust for power may yet be our undoing."
+  },
+  "nr_keira": {
+    "flavor": "If I'm to die today, I wish to look smashing for the occasion."
+  },
+  "nr_sabrina": {
+    "flavor": "The Daughter of the Kaedweni Wilderness."
+  },
+  "nr_sheldon": {
+    "flavor": "I was there, on the front lines! Right where the fightin' was the thickest!"
+  },
+  "nr_dethmold": {
+    "flavor": "I once made a prisoner vomit his own entrails... Ah, good times..."
+  },
+  "nr_blue_stripes": {
+    "ability": "Tight Bond: Place next to a card with the same name to double the strength of both cards.",
+    "flavor": "I'd do anything for Temeria. Mostly, though, I kill for her."
+  },
+  "nr_crinfrid_reavers": {
+    "ability": "Tight Bond: Place next to a card with the same name to double the strength of both cards.",
+    "flavor": "Haven't had much luck with monsters of late, so we enlisted."
+  },
+  "nr_redanian_foot": {
+    "flavor": "I've bled for Redania! I've killed for Redania... Dammit, I've even raped for Redania!"
+  },
+  "nr_kaedweni_siege_expert": {
+    "ability": "Morale boost: Adds +1 to all units in the row (excluding itself).",
+    "flavor": "'You gotta recalibrate the arm by five degrees.' 'Do what by the what now?'"
+  },
+  "nr_dun_banner_medic": {
+    "ability": "Medic: Choose one card from your discard pile and play it instantly (no Heroes or Special Cards).",
+    "flavor": "Stitch red to red, white to white, and everything will be all right."
+  },
+  "nr_siege_tower": {
+    "flavor": "I love the clamor of siege towers in the morning. Sounds like victory."
+  },
+  "nr_ballista": {
+    "flavor": "'Usually we give 'em female names.' 'Like Jenny?' 'More like Bertha.'"
+  },
+  "nr_trebuchet": {
+    "flavor": "Castle won't batter itself down, now will it? Get them trebuchets rollin'!"
+  },
+  "nr_catapult": {
+    "ability": "Tight Bond: Place next to a card with the same name to double the strength of both cards.",
+    "flavor": "The gods help those who have better catapults."
+  },
+  "nf_letho": {
+    "ability": "Hero: Not affected by any Special Cards or abilities.",
+    "flavor": "Witchers never die in their beds."
+  },
+  "nf_menno": {
+    "ability": "Hero: Not affected by any Special Cards or abilities. Medic: Choose one card from your discard pile and play it instantly (no Heroes or Special Cards).",
+    "flavor": "I'll take an attentive reconnaissance unit over a fine cavalry brigade any day."
+  },
+  "nf_morvran": {
+    "ability": "Hero: Not affected by any Special Cards or abilities.",
+    "flavor": "Summer sun reflecting in the quiet waters of the Alba - that's Nilfgaard to me."
+  },
+  "nf_tibor": {
+    "ability": "Hero: Not affected by any Special Cards or abilities.",
+    "flavor": "Albaaaa! Forward!! Alba! Long live the Emperor!"
+  },
+  "nf_shilard": {
+    "ability": "Spy: Place on your opponent's battlefield (counts towards your opponent's total) and draw 2 cards from your deck.",
+    "flavor": "Warfare is mere sound and fury - diplomacy is what truly shapes history."
+  },
+  "nf_stefan_skellen": {
+    "ability": "Spy: Place on your opponent's battlefield (counts towards opponent's total) and draw 2 cards from your deck.",
+    "flavor": "My mark scars the face of our future empress. That is my proudest achievement."
+  },
+  "nf_vattier": {
+    "ability": "Spy: Place on your opponent's battlefield (counts towards opponent's total) and draw 2 cards from your deck.",
+    "flavor": "There's never been a problem a well-planned assassination couldn't solve."
+  },
+  "nf_albrich": {
+    "flavor": "A fireball? Of course. Whatever Your Imperial Majesty wishes."
+  },
+  "nf_assire": {
+    "flavor": "Nilfgaardian mages do have a choice: servile submission, or the gallows."
+  },
+  "nf_cynthia": {
+    "flavor": "Cynthia's talents can be deadly. She needs a tight leash."
+  },
+  "nf_fringilla": {
+    "flavor": "Magic is the highest good. It transcends all borders and divisions."
+  },
+  "nf_vanhemar": {
+    "flavor": "For a fire mage, he's not very... flamboyant."
+  },
+  "nf_rainfarn": {
+    "flavor": "You'll die as painfully as that pathetic traitor Windhalm did."
+  },
+  "nf_renuald": {
+    "flavor": "They say the Impera fear nothing. Untrue. Renuald scares them shitless."
+  },
+  "nf_morteisen": {
+    "flavor": "No Nordling pikemen or dwarven spearbearers can hope to best trained cavalry."
+  },
+  "nf_sweers": {
+    "flavor": "And hands off the girl! Whatever we may be, we're not savages."
+  },
+  "nf_puttkammer": {
+    "flavor": "Learned a lot at Braibant Military Academy. How to scrub potatoes, for instance."
+  },
+  "nf_cahir": {
+    "flavor": "His eyes flashed under his winged helmet. Fire gleamed from his sword's blade."
+  },
+  "nf_black_archer": {
+    "flavor": "I aim for the knee. Always."
+  },
+  "nf_impera_brigade": {
+    "ability": "Tight Bond: Place next to a card with the same name to double the strength of both cards.",
+    "flavor": "The Impera Brigade never surrenders. Ever."
+  },
+  "nf_nausicaa": {
+    "ability": "Tight Bond: Place next to a card with the same name to double the strength of both cards.",
+    "flavor": "The Emperor will teach the North discipline."
+  },
+  "nf_rotten_mangonel": {
+    "flavor": "The rotten smell brings back childhood memories"
+  },
+  "nf_siege_engineer": {
+    "flavor": "Wielded correctly, a protractor can be a deadly weapon."
+  },
+  "nf_siege_technician": {
+    "ability": "Medic: Choose one card from your discard pile and play it instantly (no Heroes or Special Cards).",
+    "flavor": "I never miss twice."
+  },
+  "nf_fire_scorpion": {
+    "flavor": "The Zerrikania Desert used to be a lush garden. Then these came along."
+  },
+  "nf_heavy_fire_scorpion": {
+    "flavor": "Not the best for taking cities, but great for razing them to the ground."
+  },
+  "sc_iorveth": {
+    "ability": "Hero: Not affected by any Special Cards or abilities.",
+    "flavor": "King or beggar, what's the difference? One dh'oine less."
+  },
+  "sc_eithne": {
+    "ability": "Hero: Not affected by any Special Cards or abilities.",
+    "flavor": "The dryad queen has eyes of molten silver, and a heart of cold-forged steel."
+  },
+  "sc_saesenthessis": {
+    "ability": "Hero: Not affected by any Special Cards or abilities.",
+    "flavor": "Beautiful, pure, fierce - the prefect icon for a rebellion."
+  },
+  "sc_isengrim": {
+    "ability": "Morale boost: Adds +1 to all units in the row (excluding itself). Hero: Not affected by any Special Cards or abilities.",
+    "flavor": "It dawns on them once they notice my scar: a realization of imminent death."
+  },
+  "sc_milva": {
+    "ability": "Morale boost: Adds +1 to all units in the row (excluding itself).",
+    "flavor": "With each arrow I loose, I think of my da. He'd be proud. I think."
+  },
+  "sc_ida_emean": {
+    "flavor": "I am a Sage. My power lies in possessing knowledge. Not sharing it."
+  },
+  "sc_toruviel": {
+    "flavor": "I'd gladly kill you from up close, stare in your eyes... But you reek, human."
+  },
+  "sc_dennis_cranmer": {
+    "flavor": "I know how to carry out orders, so you can shove your advice up your coal chute."
+  },
+  "sc_yaevinn": {
+    "ability": "Agile: Can be placed in either the Close Combat or the Ranged Combat row. Cannot be moved once placed.",
+    "flavor": "We are the drops of rain that together make a ferocious storm."
+  },
+  "sc_barclay_els": {
+    "ability": "Agile: Can be placed in either the Close Combat or the Ranged Combat row. Cannot be moved once placed.",
+    "flavor": "Our mead smells like piss, do it? Easy to fix - I'll break your fuckin' nose!"
+  },
+  "sc_riordain": {
+    "flavor": "Stare into their eyes, feast on their terror. Then go in for the kill."
+  },
+  "sc_schirru": {
+    "ability": "Scorch - Siege: Destroys your enemy's strongest Siege Combat unit(s) if the combined strength of all his or her Siege Combat units is 10 or more.",
+    "flavor": "Time to look death in the face."
+  },
+  "sc_dol_blathanna_scout": {
+    "ability": "Agile: Can be placed in either the Close Combat or the Ranged Combat row. Cannot be moved once placed.",
+    "flavor": "They track like hounds, run like deer and kill like cold-hearted bastards."
+  },
+  "sc_dol_blathanna_archer": {
+    "flavor": "Take another step, dh'oine. You'd look better with an arrow between your eyes."
+  },
+  "sc_elven_skirmisher": {
+    "ability": "Muster: Find any cards with the same name in your deck and play them instantly.",
+    "flavor": "No matter what you may have heard, elves don't take human scalps. Too much lice."
+  },
+  "sc_havekar_healer": {
+    "ability": "Medic: Choose one card from your discard pile and play it instantly (no Heroes or Special Cards).",
+    "flavor": "Sure, I'll patch you up. Gonna cost you, though."
+  },
+  "sc_havekar_smuggler": {
+    "ability": "Muster: Find any cards with the same name in your deck and play them instantly.",
+    "flavor": "I fight for whoever's paying the best. Or whoever's easiest to rob."
+  },
+  "sc_mahakaman_defender": {
+    "flavor": "I'm telling ye, we're born fer battle - we slash straight at their knees!"
+  },
+  "sc_vrihedd_brigade_veteran": {
+    "ability": "Agile: Can be placed in either the Close Combat or the Ranged Combat row. Cannot be moved once placed.",
+    "flavor": "'Vrihedd? What's that mean?' 'Trouble.'"
+  },
+  "sc_vrihedd_brigade_recruit": {
+    "flavor": "Hatred burns brighter than any fire, and cuts deeper than any blade."
+  },
+  "mo_leshen": {
+    "ability": "Hero: Not affected by any Special Cards or abilities.",
+    "flavor": "We never hunt in these woods. Not even if it means the whole village starves."
+  },
+  "mo_kayran": {
+    "ability": "Hero: Not affected by any Special Cards or abilities. Morale boost: Adds +1 to all units in the row (excluding itself). Agile: Can be placed in either the Close Combat or the Ranged Combat row. Cannot be moved once placed.",
+    "flavor": "Kill a kayran? Simple. Take your best sword... then sell it and hire a witcher."
+  },
+  "mo_imlerith": {
+    "ability": "Hero: Not affected by any Special Cards or abilities.",
+    "flavor": "Ladd nahw! Kill them! Litter the earth with their entrails!"
+  },
+  "mo_draug": {
+    "ability": "Hero: Not affected by any Special Cards or abilities.",
+    "flavor": "Some men cannot admit defeat. Some keep fighting from beyond the grave."
+  },
+  "mo_arachas_behemoth": {
+    "ability": "Muster: Find any cards with the same name in your deck and play them instantly.",
+    "flavor": "Like a cross between a crab, a spider...and a ploughin' mountain"
+  },
+  "mo_arachas": {
+    "ability": "Muster: Find any cards with the same name in your deck and play them instantly.",
+    "flavor": "Ugly - nature's way of saying 'Stay the fuck away.'"
+  },
+  "mo_crone_brewess": {
+    "ability": "Muster: Find any cards with the same name in your deck and play them instantly.",
+    "flavor": "We'll cut you up, boy. A fine broth you will make."
+  },
+  "mo_crone_weavess": {
+    "ability": "Muster: Find any cards with the same name in your deck and play them instantly.",
+    "flavor": "I sense your pain. I see your fear..."
+  },
+  "mo_crone_whispess": {
+    "ability": "Muster: Find any cards with the same name in your deck and play them instantly.",
+    "flavor": "I'd be your best - and last."
+  },
+  "mo_vampire_katakan": {
+    "ability": "Muster: Find any cards with the same name in your deck and play them instantly.",
+    "flavor": "Drinking the blood of the Continent since the Conjunction."
+  },
+  "mo_vampire_ekimmara": {
+    "ability": "Muster: Find any cards with the same name in your deck and play them instantly",
+    "flavor": "Who would think overgrown bats would have a taste for gaudy jewelry?"
+  },
+  "mo_vampire_fleder": {
+    "ability": "Muster: Find any cards with the same name in your deck and play them instantly",
+    "flavor": "Higher vampires embrace their victims. Fleders rip them to shreds."
+  },
+  "mo_vampire_garkain": {
+    "ability": "Muster: Find any cards with the same name in your deck and play them instantly",
+    "flavor": "Blood-drinkers and corpse-eaters so foul their very ugliness paralyses foes."
+  },
+  "mo_vampire_bruxa": {
+    "ability": "Muster: Find any cards with the same name in your deck and play them instantly",
+    "flavor": "A vile, bloodthirsty, man-eating hag. Kind of like my mother-in-law."
+  },
+  "mo_ghoul": {
+    "ability": "Muster: Find any cards with the same name in your deck and play them instantly.",
+    "flavor": "If ghouls are part of the Circle of Life... then it's a damn vicious circle."
+  },
+  "mo_nekker": {
+    "ability": "Muster: Find any cards with the same name in your deck and play them instantly.",
+    "flavor": "Damn things are almost cute, if you ignore the whole vicious killer aspect."
+  },
+  "mo_toad": {
+    "ability": "Scorch - Ranged: Destroy your enemy's strongest Ranged Combat unit(s) if the combined strength of all his or her Ranged Combat units is 10 or more.",
+    "flavor": "Big. Bad. Ugly. Squats in the sewers."
+  },
+  "mo_frightener": {
+    "flavor": "\"What have I done?\" the mage cried out, frightened of his own creation."
+  },
+  "mo_werewolf": {
+    "flavor": "Wolves aren't as bad as they say. Werewolves, though - they're worse."
+  },
+  "mo_fiend": {
+    "flavor": "A fiend looks a bit like a deer. An enormous, evil deer."
+  },
+  "mo_plague_maiden": {
+    "flavor": "The sick rave about a boil-pocked woman surrounded by herds of rabid rats..."
+  },
+  "mo_griffin": {
+    "flavor": "Griffins like to toy with their prey. Eat 'em alive, piece by piece."
+  },
+  "mo_forktail": {
+    "flavor": "Fork tails... Bah! Fuckers' tails're more like cleavers."
+  },
+  "mo_botchling": {
+    "flavor": "Admit your mistakes and bury them proper - else they'll come back to haunt you."
+  },
+  "mo_foglet": {
+    "ability": "|source = Purchased from Svorlag's innkeep",
+    "flavor": "Fog creeps on little cat feet. Foglets creep over the bodies of their victims."
+  },
+  "mo_wyvern": {
+    "flavor": "Imagine a cross between a winged snake and a nightmare. Wyverns are worse."
+  },
+  "mo_harpy": {
+    "ability": "Agile: Can be placed in either the Close Combat or the Ranged Combat row. Cannot be moved once placed.",
+    "flavor": "There are many species of harpy, and all are kleptomaniacs."
+  },
+  "mo_celaeno_harpy": {
+    "ability": "Agile: Can be placed in either the Close Combat or the Ranged Combat row. Cannot be moved once placed.",
+    "flavor": "Common harpies feed on carrion. Celaeno harpies... they feed on dreams."
+  },
+  "mo_cockatrice": {
+    "flavor": "Born of an egg laid by a cockerel... if you believe such peasant drivel."
+  },
+  "mo_endrega": {
+    "flavor": "The nest! Take out the nest, or the bastards'll just keep coming!"
+  },
+  "mo_grave_hag": {
+    "flavor": "Their long tongues're for slurping marrow - and whipping prep."
+  },
+  "mo_gargoyle": {
+    "flavor": "Ancient sculptors' nightmarish fantasies, brought to life by bored mages."
+  },
+  "mo_earth_elemental": {
+    "flavor": "How to fight an earth elemental? You don't. You run. Fast as you can."
+  },
+  "mo_fire_elemental": {
+    "flavor": "Fire is so delightful."
+  },
+  "mo_ice_giant": {
+    "flavor": "Fled one time in my life. From the Ice Giant. And I'm not a bit ashamed."
+  },
+  "sk_cerys": {
+    "ability": "Hero: Not affected by any Special Cards or abilities. Summon Shield Maidens: Summons all Shield Maidens from deck and hand.",
+    "flavor": "They call me Sparrowhawk, know why? Because I eat rats like you for breakfast."
+  },
+  "sk_hjalmar": {
+    "ability": "Hero: Not affected by any Special Cards or abilities.",
+    "flavor": "Instead of mournin' the fallen, let's drink to their memory!"
+  },
+  "sk_ermion": {
+    "ability": "Hero: Not affected by any Special Cards or abilities. Mardroeme: Triggers transformation of all Berserker cards on the same row.",
+    "flavor": "Only the ignorant dismiss the importance of myths."
+  },
+  "sk_hemdall": {
+    "ability": "Hero: Not affected by any Special Cards or abilities.",
+    "flavor": "When the time of the White Frost comes, Hemdall will sound the call for battle."
+  },
+  "sk_kambi": {
+    "ability": "When this card is removed from the battlefield, it summons a powerful new Unit Card to take its place.",
+    "flavor": "When the time comes, the cockerel Kambi shall crow and awaken Hemdall."
+  },
+  "sk_olaf": {
+    "ability": "Agile: Can be placed in either the Close Combat or the Ranged Combat row. Cannot be moved once placed. Morale boost: Adds +1 to all units in the row (excluding itself).",
+    "flavor": "Many've tried to defeat Olaf. But won't hear about it from them - they're dead."
+  },
+  "sk_madman_lugos": {
+    "flavor": "WAAAAAAAAAAGH!!!!"
+  },
+  "sk_blueboy_lugos": {
+    "flavor": "I'm damn near ready to puke from boredom."
+  },
+  "sk_svanrige": {
+    "flavor": "The emperor also thought him an accidental king. At first."
+  },
+  "sk_donar": {
+    "flavor": "I've gathered all the jarls together. Now make your case."
+  },
+  "sk_holger": {
+    "flavor": "Now let's drink to Emperor of Nilfgaard - may his prick forever stay limp!"
+  },
+  "sk_udalryk": {
+    "flavor": "Haaaargh! After me, if ye've the bollocks!"
+  },
+  "sk_birna_bran": {
+    "ability": "Medic: Choose one card from your discard pile and play it instantly (no Heroes or Special Cards).",
+    "flavor": "Skellige must have a strong king. No matter what it takes."
+  },
+  "sk_clan_dimun_pirate": {
+    "ability": "Scorch: Kills the strongest card(s) on the battlefield.",
+    "flavor": "Can see the fear in their eyes. Fear o' me... fear o' Clan Dimun!"
+  },
+  "sk_shield_maiden": {
+    "ability": "Tight Bond: Place next to a card with the same name to double the strength of both cards.",
+    "flavor": "They'll shatter on our shields like waves on a rocky shore."
+  },
+  "sk_an_craite_warrior": {
+    "ability": "Tight Bond: Place next to a card with the same name to double the strength of both cards.",
+    "flavor": "I'll bring the an Craites such glory, bards'll go hoarse singin' me praises!"
+  },
+  "sk_brokvar_archer": {
+    "flavor": "So ye can hit a movin' target at two hundred paces. Me, too. In a storm."
+  },
+  "sk_tordarroch_armorsmith": {
+    "flavor": "Ye're in for a poundin'."
+  },
+  "sk_war_longship": {
+    "ability": "Tight Bond: Place next to a card with the same name to double the strength of both cards.",
+    "flavor": "They say Hemdall's heart swells whenever the longships sail out on a raid."
+  },
+  "sk_light_longship": {
+    "ability": "Muster: Find any cards with the same name in your deck and play them instantly.",
+    "flavor": "Escape them? In the waters of Skellige? Good luck."
+  },
+  "sk_draig_bon_dhu": {
+    "ability": "Commander's Horn: Doubles the strength of all unit cards in that row. Limited to 1 per row.",
+    "flavor": "Hear ye now the tale of the heroic deeds of Clan an Craite."
+  },
+  "sk_young_berserker": {
+    "ability": "Transforms into a bear when a Mardroeme card is on its row.",
+    "flavor": "Want some?"
+  },
+  "sk_berserker": {
+    "ability": "Transforms into a bear when a Mardroeme card is on its row.",
+    "flavor": "Kill, crush, cleave!"
+  },
+  "sk_mardroeme": {
+    "ability": "Triggers transformation of all Berserker cards on the same row.",
+    "flavor": "Eat enough of them, and the world will never be the same..."
+  },
+  "nr_leader_steel_forged": {
+    "ability": "Destroy your enemy's strongest Siege unit(s) if the combined strength of all his or her Siege units is 10 or more.",
+    "flavor": "A beautiful day for battle."
+  },
+  "nr_leader_siegemaster": {
+    "ability": "Doubles the strength of all your Siege units (unless a Commander's Horn is also present on that row).",
+    "flavor": "A well-aimed ballista razes not just the enemy's walls, but his morale as well."
+  },
+  "nr_leader_kingdom_temeria": {
+    "ability": "Pick an Impenetrable Fog card from your deck and play it instantly.",
+    "flavor": "It is natural and beautiful that a man should love his sister."
+  },
+  "nr_leader_lord_commander": {
+    "ability": "Clear any weather effects (resulting from Biting Frost, Torrential Rain or Impenetrable Fog cards) in play.",
+    "flavor": "Sod advisors and their schemes. I place my trust in my solders' blades."
+  },
+  "nr_leader_son_of_medell": {
+    "ability": "Destroy your enemy's strongest Ranged Combat unit(s) if the combined strength of all his or her Ranged Combat units is 10 or more.",
+    "flavor": "Dammit, I rule this land and I refuse to creep around its corners."
+  },
+  "nf_leader_imperial_majesty": {
+    "ability": "His Imperial Majesty: Pick a Torrential Rain card from your deck and play it instantly.",
+    "flavor": "The skies wept when my Pavetta died. They will not weep for me."
+  },
+  "nf_leader_emperor": {
+    "ability": "Emperor of Nilfgaard: Look at 3 random cards from your opponent's hand.",
+    "flavor": "Your motives do not interest me. Only results."
+  },
+  "nf_leader_white_flame": {
+    "ability": "The White Flame: Cancel your opponent's Leader Ability.",
+    "flavor": "A sword is but one of many tools at a ruler's disposal."
+  },
+  "nf_leader_relentless": {
+    "ability": "The Relentless: Draw a card from your opponent's discard pile.",
+    "flavor": "They do not call me the Patient. Take care they do not call you the Headless."
+  },
+  "nf_leader_invader": {
+    "ability": "Invader of the North: Abilities that restore a unit to the battlefield restore a randomly-chosen unit. Affects both players.",
+    "flavor": "Emperors command multitudes, yet cannot control two things: their time and their hearts."
+  },
+  "sc_leader_daisy": {
+    "ability": "Daisy of the Valley: Draw an extra card at the beginning of the battle.",
+    "flavor": "The Elder Races have forgotten more than humans can ever hope to know."
+  },
+  "sc_leader_pureblood": {
+    "ability": "Pureblood Elf: Pick a Biting Frost card from your deck and play it instantly.",
+    "flavor": "Ash shall fertilize the soil. By spring, the valley shall bloom once more."
+  },
+  "sc_leader_queen": {
+    "ability": "Queen of Dol Blathanna: Destroy your enemy's strongest Close Combat unit(s) if the combined strength of all his or her Close Combat units is 10 or more.",
+    "flavor": "To live in peace, we first must kill. This is human oppression's cruel finale."
+  },
+  "sc_leader_beautiful": {
+    "ability": "The Beautiful: Doubles the strength of all your Ranged Combat units (unless a Commander's Horn is also present on that row).",
+    "flavor": "Do not let my beauty distract your aim."
+  },
+  "sc_leader_hope": {
+    "ability": "Hope of the Aen Seidhe: Move agile units to whichever valid row maximizes their strength (don't move units already in optimal row).",
+    "flavor": "Daede sian caente, Aen Seidhe en'allane ael coeden..."
+  },
+  "mo_leader_red_riders": {
+    "ability": "Double the strength of all your Close Combat units (unless a Commander's horn is also present on that row).",
+    "flavor": "Have some dignity. You know how this will end."
+  },
+  "mo_leader_bringer_death": {
+    "ability": "Restore a card from your discard pile to your hand.",
+    "flavor": "Go on. Show me your spins, pirouettes and feints. I want to watch."
+  },
+  "mo_leader_destroyer": {
+    "ability": "Discard 2 card and draw 1 card of your choice from your deck.",
+    "flavor": "It is unavoidable."
+  },
+  "sk_leader_crach": {
+    "ability": "Shuffle all cards from each player's graveyard back into their decks.",
+    "flavor": "A king's gotta be wise. A king's gotta command respect. A king's gotta have stones."
+  },
+  "sk_leader_bran": {
+    "ability": "Units only lose half their Strength in bad weather conditions.",
+    "flavor": "No one can replace Bran. Though they're sure to try."
+  }
+}

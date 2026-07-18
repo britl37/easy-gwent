@@ -15,6 +15,7 @@
     "start": "npm run start -w @gwent/server",
     "test": "vitest run",
     "build-manifest": "tsx scripts/build-asset-manifest.ts",
+    "build-card-text": "tsx scripts/build-card-text.ts",
     "fetch-assets": "tsx scripts/fetch-assets.ts"
   },
   "devDependencies": {

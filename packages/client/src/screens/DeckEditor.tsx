@@ -1,5 +1,5 @@
 import { ALL_CARDS, LEADER_CARDS, byId, type CardDef, type PlayableFaction } from '@gwent/data';
-import { MAX_HEROES, MAX_SPECIALS, MIN_UNITS, validateDeck, type DeckList } from '@gwent/engine';
+import { MAX_SPECIALS, MIN_UNITS, validateDeck, type DeckList } from '@gwent/engine';
 import { useMemo, useState } from 'react';
 import { loadDeckDraft, saveDeck } from '../game/decks.ts';
 
@@ -92,7 +92,7 @@ export function DeckEditorScreen({
       if (c.type === 'unit') {
         units++;
         strength += c.strength ?? 0;
-        if (c.hero) heroes++;
+        if (c.hero) heroes++; // heroes shown as info only — no cap
       } else {
         specials++;
       }
@@ -185,7 +185,7 @@ export function DeckEditorScreen({
           <h3>
             Deck <span className="deck-stats">
               units {stats.units}/{MIN_UNITS}+ · specials {stats.specials}/{MAX_SPECIALS} · heroes{' '}
-              {stats.heroes}/{MAX_HEROES} · str {stats.strength}
+              {stats.heroes} · str {stats.strength}
             </span>
           </h3>
           {errors.length > 0 && (

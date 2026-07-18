@@ -17,14 +17,12 @@ export interface DeckError {
     | 'too_few_units'
     | 'too_many_specials'
     | 'too_many_copies'
-    | 'too_many_heroes'
     | 'bad_leader';
   message: string;
 }
 
 export const MIN_UNITS = 22;
 export const MAX_SPECIALS = 10;
-export const MAX_HEROES = 10;
 
 export function validateDeck(deck: DeckList): DeckError[] {
   const errors: DeckError[] = [];
@@ -77,9 +75,6 @@ export function validateDeck(deck: DeckList): DeckError[] {
   }
   if (specials > MAX_SPECIALS) {
     errors.push({ code: 'too_many_specials', message: `At most ${MAX_SPECIALS} special cards allowed (has ${specials})` });
-  }
-  if (heroes > MAX_HEROES) {
-    errors.push({ code: 'too_many_heroes', message: `At most ${MAX_HEROES} hero cards allowed (has ${heroes})` });
   }
   return errors;
 }

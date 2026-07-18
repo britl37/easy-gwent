@@ -1,6 +1,14 @@
 import type { Row } from '@gwent/data';
 import type { GameState, PlayerId } from '@gwent/engine';
 import { useEffect, useRef, useState } from 'react';
+import {
+  sfxCardPlay,
+  sfxDefeat,
+  sfxOpponentTurn,
+  sfxRoundEnd,
+  sfxVictory,
+  sfxYourTurn,
+} from './sfx';
 
 const ROWS: Row[] = ['melee', 'ranged', 'siege'];
 
@@ -83,10 +91,22 @@ export function usePlayReveals(state: GameState | null, me: PlayerId) {
             : null;
     if (whose && whose !== prevWhoseRef.current && prev) {
       setTurnBanner(whose);
+      if (whose === 'you') sfxYourTurn();
+      else sfxOpponentTurn();
       if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
       toastTimerRef.current = setTimeout(() => setTurnBanner(null), TURN_TOAST_MS);
     }
     prevWhoseRef.current = whose;
+
+    // Round / match end sounds (only on transitions, never on the first snapshot).
+    if (prev) {
+      if (state.phase === 'finished' && prev.phase !== 'finished') {
+        if (state.winner === me) sfxVictory();
+        else sfxDefeat();
+      } else if (state.roundHistory.length > prev.roundHistory.length) {
+        sfxRoundEnd();
+      }
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state, me]);
 
@@ -98,6 +118,7 @@ export function usePlayReveals(state: GameState | null, me: PlayerId) {
       return;
     }
     setReveal(next);
+    sfxCardPlay();
     timerRef.current = setTimeout(drainQueue, REVEAL_MS);
   };
 

@@ -6,13 +6,14 @@ export default defineConfig({
   server: {
     port: 5173,
     proxy: {
-      // Dev: browser talks to Vite; WS upgrades proxy to the game server.
+      // API + WebSocket → game server during local dev.
+      '/api': { target: 'http://127.0.0.1:8787' },
       '/': {
         target: 'http://127.0.0.1:8787',
         ws: true,
         bypass: (req) => {
-          // Let Vite handle app assets; only proxy bare WS upgrade to the game server.
           if (req.headers.upgrade === 'websocket') return undefined;
+          if (req.url?.startsWith('/api')) return undefined;
           return req.url;
         },
       },

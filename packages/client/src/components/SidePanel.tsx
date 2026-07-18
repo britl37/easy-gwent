@@ -13,11 +13,13 @@ export function StatusColumn({
   human,
   canPlayLeader,
   onLeader,
+  opponentName,
 }: {
   state: GameState;
   human: PlayerId;
   canPlayLeader: boolean;
   onLeader: () => void;
+  opponentName?: string;
 }) {
   const opp: PlayerId = human === 0 ? 1 : 0;
   const weather = (Object.keys(state.weather) as WeatherKind[]).filter((w) => state.weather[w]);
@@ -26,7 +28,7 @@ export function StatusColumn({
     const ps = state.players[p];
     return (
       <div className={`seat ${mine ? 'seat-mine' : ''} ${state.turn === p && state.phase === 'play' ? 'seat-active' : ''}`}>
-        <div className="seat-name">{mine ? 'You' : 'Opponent'}</div>
+        <div className="seat-name">{mine ? 'You' : opponentName ?? 'Opponent'}</div>
         <div className="seat-gems">{'◆'.repeat(ps.gems)}{'◇'.repeat(Math.max(0, 2 - ps.gems))}</div>
         <div className="seat-info">
           Hand {ps.hand.length} · Deck {ps.deck.length}

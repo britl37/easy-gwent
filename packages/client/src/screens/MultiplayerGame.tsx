@@ -1,5 +1,12 @@
 import type { Row } from '@gwent/data';
-import { legalActions, type Action, type GameState, type PlayCardAction, type ServerMsg } from '@gwent/engine';
+import {
+  legalActions,
+  type Action,
+  type GameState,
+  type PlayCardAction,
+  type ServerMsg,
+  type UserPublic,
+} from '@gwent/engine';
 import { useEffect, useMemo, useState } from 'react';
 import { Board } from '../components/Board.tsx';
 import { CarouselPicker } from '../components/CarouselPicker.tsx';
@@ -12,13 +19,16 @@ export function MultiplayerGameScreen({
   onExit,
 }: {
   session: MultiplayerSession;
-  onExit: () => void;
+  onExit: (updatedUser?: UserPublic) => void;
 }) {
   const human = session.you;
   const [state, setState] = useState<GameState | null>(null);
   const [selected, setSelected] = useState<number | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [banner, setBanner] = useState<string | null>(null);
+  const [matchLine, setMatchLine] = useState<string | null>(null);
+  const [updatedUser, setUpdatedUser] = useState<UserPublic | null>(null);
+  const [opponentLeft, setOpponentLeft] = useState(false);
 
   useEffect(() => {
     const onMsg = (msg: ServerMsg) => {
@@ -32,10 +42,18 @@ export function MultiplayerGameScreen({
         return;
       }
       if (msg.t === 'opponent_left') {
+        setOpponentLeft(true);
         setBanner('Opponent left the game.');
+        return;
+      }
+      if (msg.t === 'match_result') {
+        setUpdatedUser(msg.you);
+        const stats = `${msg.you.wins}W–${msg.you.losses}L–${msg.you.draws}D`;
+        if (msg.result === 'win') setMatchLine(`Victory! (${stats})`);
+        else if (msg.result === 'loss') setMatchLine(`Defeat. (${stats})`);
+        else setMatchLine(`Draw. (${stats})`);
       }
     };
-    // Re-bind handler (socket was already connected in lobby).
     session.socket.connect(onMsg);
     return () => {
       session.socket.send({ t: 'leave' });
@@ -102,9 +120,11 @@ export function MultiplayerGameScreen({
   if (!state || !me) {
     return (
       <div className="menu-screen">
-        <p className="menu-note">Waiting for game state… (room {session.roomId})</p>
+        <p className="menu-note">
+          Waiting for game state… vs {session.opponentUsername} (room {session.roomId})
+        </p>
         {banner && <p className="menu-error">{banner}</p>}
-        <button className="btn" onClick={onExit}>
+        <button className="btn" onClick={() => onExit(updatedUser ?? undefined)}>
           Leave
         </button>
       </div>
@@ -118,13 +138,17 @@ export function MultiplayerGameScreen({
       : null;
 
   const finished = state.phase === 'finished';
-  const resultText = finished
-    ? state.drawn
-      ? 'Draw!'
-      : state.winner === human
-        ? 'You won!'
-        : 'You lost.'
-    : null;
+  const resultText =
+    matchLine ??
+    (finished
+      ? state.drawn
+        ? 'Draw!'
+        : state.winner === human
+          ? 'You won!'
+          : 'You lost.'
+      : null);
+
+  const showResult = finished || opponentLeft;
 
   return (
     <div className="game-screen">
@@ -133,6 +157,7 @@ export function MultiplayerGameScreen({
         human={human}
         canPlayLeader={!!canLeader}
         onLeader={() => dispatch({ type: 'PLAY_LEADER', player: human })}
+        opponentName={session.opponentUsername}
       />
       <div className="game-center">
         {banner && <div className="mp-banner">{banner}</div>}
@@ -188,10 +213,11 @@ export function MultiplayerGameScreen({
           onDecline={() => dispatch({ type: 'RESOLVE_CHOICE', player: human, cardId: null })}
         />
       )}
-      {(finished || banner === 'Opponent left the game.') && (
+      {showResult && (
         <div className="carousel-overlay">
           <div className="carousel result-box">
             <h2>{resultText ?? banner}</h2>
+            <p className="menu-note">vs {session.opponentUsername}</p>
             {finished && (
               <table className="round-table">
                 <tbody>
@@ -207,7 +233,7 @@ export function MultiplayerGameScreen({
                 </tbody>
               </table>
             )}
-            <button className="btn" onClick={onExit}>
+            <button className="btn" onClick={() => onExit(updatedUser ?? undefined)}>
               Back to menu
             </button>
           </div>

@@ -4,3 +4,7 @@ dist/
 assets/cards/*.png
 *.tsbuildinfo
 .vite/
+packages/server/data/
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm

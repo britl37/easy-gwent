@@ -43,6 +43,25 @@ body {
   text-align: center; padding: 4px; background: #5c2a2288; border: 1px solid #e06c5c;
   border-radius: 4px; margin-bottom: 4px; font-size: 14px;
 }
+.field-label {
+  display: flex; flex-direction: column; gap: 4px; align-items: stretch; width: 100%;
+  color: #b8a988; font-size: 13px;
+}
+.text-input {
+  font-family: inherit; font-size: 16px; padding: 8px 12px;
+  background: #20180f; color: #e8dcc0; border: 1px solid #8a6d3b; border-radius: 4px;
+}
+.user-stats { display: flex; align-items: center; gap: 10px; }
+.leaderboard-box { max-width: 520px; width: 90%; }
+.leaderboard-table {
+  width: 100%; border-collapse: collapse; font-size: 14px; margin: 8px 0 16px;
+}
+.leaderboard-table th, .leaderboard-table td {
+  padding: 6px 10px; border-bottom: 1px solid #3a2f1e; text-align: left;
+}
+.leaderboard-table th { color: #c9a227; font-weight: normal; }
+.leaderboard-table td:nth-child(n+3) { text-align: right; }
+.leaderboard-table th:nth-child(n+3) { text-align: right; }
 
 /* ---- game layout ---- */
 .game-screen { display: grid; grid-template-columns: 190px 1fr 230px; gap: 8px; height: 100vh; padding: 8px; }

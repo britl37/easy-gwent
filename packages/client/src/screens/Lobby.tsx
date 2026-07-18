@@ -1,7 +1,8 @@
 import type { PlayableFaction } from '@gwent/data';
-import type { ServerMsg } from '@gwent/engine';
+import type { ServerMsg, UserPublic } from '@gwent/engine';
 import { useEffect, useRef, useState } from 'react';
 import { loadDeck } from '../game/decks.ts';
+import { getToken } from '../net/auth.ts';
 import { GwentSocket } from '../net/socket.ts';
 
 const FACTIONS: Array<{ id: PlayableFaction; name: string }> = [
@@ -17,12 +18,15 @@ export interface MultiplayerSession {
   roomId: string;
   you: 0 | 1;
   opponentFaction: PlayableFaction;
+  opponentUsername: string;
 }
 
 export function LobbyScreen({
+  user,
   onBack,
   onJoined,
 }: {
+  user: UserPublic | null;
   onBack: () => void;
   onJoined: (session: MultiplayerSession) => void;
 }) {
@@ -31,15 +35,29 @@ export function LobbyScreen({
   const [status, setStatus] = useState<string>('Connecting…');
   const [roomId, setRoomId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [authed, setAuthed] = useState(false);
   const socketRef = useRef<GwentSocket | null>(null);
   const joinedRef = useRef(false);
 
   useEffect(() => {
+    const token = getToken();
+    if (!token) {
+      setError('Not logged in');
+      setStatus('Authentication required');
+      return;
+    }
+
     const sock = new GwentSocket();
     socketRef.current = sock;
     sock.connect((msg: ServerMsg) => {
       if (msg.t === 'error') {
         setError(`${msg.code}: ${msg.message}`);
+        return;
+      }
+      if (msg.t === 'authed') {
+        setAuthed(true);
+        setStatus('Connected. Create a room or join with a code.');
+        setError(null);
         return;
       }
       if (msg.t === 'room_created') {
@@ -56,10 +74,20 @@ export function LobbyScreen({
           roomId: msg.roomId,
           you: msg.you,
           opponentFaction: msg.opponentFaction,
+          opponentUsername: msg.opponentUsername,
         });
       }
     });
-    setStatus('Connected. Create a room or join with a code.');
+
+    // Auth as soon as the socket is open (poll briefly).
+    const tryAuth = () => {
+      if (sock.ready) {
+        sock.send({ t: 'auth', token });
+        return;
+      }
+      setTimeout(tryAuth, 50);
+    };
+    tryAuth();
 
     return () => {
       if (!joinedRef.current) sock.close();
@@ -89,6 +117,11 @@ export function LobbyScreen({
     <div className="menu-screen">
       <h1 className="title">MULTIPLAYER</h1>
       <div className="menu-box">
+        {user && (
+          <p className="menu-note user-stats">
+            {user.username} · {user.wins}W–{user.losses}L–{user.draws}D
+          </p>
+        )}
         <h3>Your faction (uses saved deck)</h3>
         <div className="faction-picker">
           {FACTIONS.map((f) => (
@@ -102,7 +135,7 @@ export function LobbyScreen({
           ))}
         </div>
 
-        <button className="btn btn-primary" onClick={create} disabled={!!roomId}>
+        <button className="btn btn-primary" onClick={create} disabled={!!roomId || !authed}>
           Create room
         </button>
 
@@ -120,9 +153,9 @@ export function LobbyScreen({
             value={joinCode}
             onChange={(e) => setJoinCode(e.target.value)}
             maxLength={8}
-            disabled={!!roomId}
+            disabled={!!roomId || !authed}
           />
-          <button className="btn" onClick={join} disabled={!!roomId}>
+          <button className="btn" onClick={join} disabled={!!roomId || !authed}>
             Join
           </button>
         </div>

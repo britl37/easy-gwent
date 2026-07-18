@@ -164,8 +164,8 @@ body::before {
   transition: transform 0.12s ease, box-shadow 0.12s ease;
 }
 .card img { display: block; border-radius: 6px; height: 100%; width: auto; }
-.card-row { height: 74px; }
-.card-hand { height: 114px; }
+.card-row { height: clamp(60px, 9dvh, 100px); }
+.card-hand { height: clamp(120px, 16.5dvh, 190px); }
 .card-big { height: 260px; }
 .card-hero {
   box-shadow: 0 0 0 2px #c9a227, 0 2px 8px #000a;
@@ -338,8 +338,8 @@ body::before {
   .card-info-flavor { display: none; }
   .side-panel .log { display: none; }
   /* Smaller cards & badges */
-  .card-row { height: 56px; }
-  .card-hand { height: 92px; }
+  .card-row { height: clamp(48px, 8dvh, 72px); }
+  .card-hand { height: clamp(96px, 14.5dvh, 132px); }
   .card-big { height: 176px; }
   .row-badge { min-width: 28px; height: 28px; font-size: 13px; }
   .half-score { font-size: 14px; }

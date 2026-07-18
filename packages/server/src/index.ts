@@ -331,6 +331,42 @@ function handleDisconnect(ws: WebSocket): void {
   }, RECONNECT_GRACE_MS);
 }
 
+/** Shared rejoin logic — used by the `rejoin` message and as a fallback when a
+ *  seated player sends `join_room` for a room they're already part of. */
+function rejoinSeat(ws: WebSocket, conn: ConnState, roomId: string): void {
+  const meta = roomMeta.get(roomId);
+  const room = rooms.get(roomId);
+  if (!meta || !room?.state || meta.matchRecorded) {
+    error(ws, 'rejoin_failed', 'Game no longer available');
+    return;
+  }
+  const seatIdx = meta.userIds.findIndex((id) => id !== null && id === conn.userId);
+  if (seatIdx === -1) {
+    error(ws, 'rejoin_failed', 'You are not a player in this room');
+    return;
+  }
+  const seat = seatIdx as PlayerId;
+  const existing = meta.seats[seat];
+  if (existing && existing !== ws && existing.readyState === existing.OPEN) {
+    error(ws, 'rejoin_failed', 'Seat is already connected');
+    return;
+  }
+  bindSeat(ws, roomId, seat, conn.userId!, conn.username!); // cancels forfeit timer
+  const oppDeck = room.decks[1 - seat]!;
+  send(ws, {
+    t: 'joined',
+    roomId,
+    you: seat,
+    opponentFaction: oppDeck.faction,
+    opponentUsername: meta.usernames[1 - seat] ?? 'Opponent',
+  });
+  send(ws, { t: 'state', state: redactState(room.state, seat) });
+  const other = meta.seats[1 - seat];
+  if (other && other.readyState === other.OPEN) {
+    send(other, { t: 'opponent_reconnected' });
+  }
+}
+
 function requireAuth(ws: WebSocket): ConnState | null {
   const conn = connByWs.get(ws);
   if (!conn?.userId || !conn.username) {
@@ -392,6 +428,12 @@ function handleMessage(ws: WebSocket, raw: string): void {
         return;
       }
       const metaExisting = roomMeta.get(msg.roomId);
+      // Reconnecting player used the Join flow with their old room code —
+      // treat it as a rejoin instead of failing with room_full.
+      if (metaExisting?.userIds.some((id) => id !== null && id === conn.userId)) {
+        rejoinSeat(ws, conn, msg.roomId);
+        return;
+      }
       if (metaExisting?.userIds[0] === conn.userId) {
         error(ws, 'already_in_room', 'Cannot join your own room as opponent');
         return;
@@ -501,37 +543,7 @@ function handleMessage(ws: WebSocket, raw: string): void {
         error(ws, 'already_in_room', 'Already in a room');
         return;
       }
-      const meta = roomMeta.get(msg.roomId);
-      const room = rooms.get(msg.roomId);
-      if (!meta || !room?.state || meta.matchRecorded) {
-        error(ws, 'rejoin_failed', 'Game no longer available');
-        return;
-      }
-      const seatIdx = meta.userIds.findIndex((id) => id !== null && id === conn.userId);
-      if (seatIdx === -1) {
-        error(ws, 'rejoin_failed', 'You are not a player in this room');
-        return;
-      }
-      const seat = seatIdx as PlayerId;
-      const existing = meta.seats[seat];
-      if (existing && existing !== ws && existing.readyState === existing.OPEN) {
-        error(ws, 'rejoin_failed', 'Seat is already connected');
-        return;
-      }
-      bindSeat(ws, msg.roomId, seat, conn.userId!, conn.username!); // cancels forfeit timer
-      const oppDeck = room.decks[1 - seat]!;
-      send(ws, {
-        t: 'joined',
-        roomId: msg.roomId,
-        you: seat,
-        opponentFaction: oppDeck.faction,
-        opponentUsername: meta.usernames[1 - seat] ?? 'Opponent',
-      });
-      send(ws, { t: 'state', state: redactState(room.state, seat) });
-      const other = meta.seats[1 - seat];
-      if (other && other.readyState === other.OPEN) {
-        send(other, { t: 'opponent_reconnected' });
-      }
+      rejoinSeat(ws, conn, msg.roomId);
       return;
     }
 

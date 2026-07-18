@@ -264,7 +264,6 @@ export function MultiplayerGameScreen({
 
   return (
     <div className="game-screen">
-      <div className="room-tag">room {session.roomId}</div>
       <PlayReveal
         reveal={reveal}
         turnBanner={turnBanner}
@@ -277,6 +276,7 @@ export function MultiplayerGameScreen({
         canPlayLeader={!!canLeader}
         onLeader={() => dispatch({ type: 'PLAY_LEADER', player: human })}
         opponentName={session.opponentUsername}
+        roomId={session.roomId}
       />
       <div className="game-center">
         {banner && <div className="mp-banner">{banner}</div>}

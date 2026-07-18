@@ -241,6 +241,15 @@ body::before {
   box-shadow: 0 0 0 3px #1a120a, 0 0 0 5px #c9a22788, 0 0 12px #c9a22755;
 }
 .seat-name { font-size: 17px; color: #c9a227; font-family: 'Cinzel', serif; }
+.seat-room {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: rgba(216, 205, 180, 0.75);
+  font-family: 'Cinzel', serif;
+  user-select: all; /* one click/tap selects the whole code for copying */
+}
+/* Nudge the opponent (top-left) card down a touch so the room id has room. */
+.status-col .seat:first-child { margin-top: 5px; }
 .seat-gems { color: #b3202a; letter-spacing: 2px; font-size: 16px; }
 .seat-info { font-size: 13px; color: #b8a988; }
 .passed { color: #e06c5c; font-weight: bold; }
@@ -522,18 +531,4 @@ body::before {
 .reduce-motion .play-reveal, .reduce-motion .play-reveal-inner, .reduce-motion .turn-banner,
 .reduce-motion .board-row .card-row, .reduce-motion .hand .card-hand {
   animation: none !important;
-}
-
-/* Small persistent room-code tag during an MP game (needed to rejoin from
-   another device or after a page reload). */
-.room-tag {
-  position: fixed;
-  left: 8px;
-  bottom: 6px;
-  z-index: 40;
-  font-size: 11px;
-  letter-spacing: 0.08em;
-  color: rgba(216, 205, 180, 0.55);
-  font-family: 'Cinzel', serif;
-  pointer-events: none;
 }

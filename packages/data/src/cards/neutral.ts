@@ -20,8 +20,9 @@ export const NEUTRAL_CARDS: CardDef[] = [
   unit(F, 'ne_olgierd', 'Olgierd von Everec', 6, ['melee', 'ranged'], { abilities: ['morale_boost'] }),
   unit(F, 'ne_gaunter_odimm', "Gaunter O'Dimm", 2, ['siege'], { musterGroup: 'odimm' }),
   unit(F, 'ne_gaunter_darkness', "Gaunter O'Dimm: Darkness", 4, ['ranged'], { musterGroup: 'odimm', count: 3 }),
-  unit(F, 'ne_cow', 'Bovine Defense Force', 8, ['ranged'], { abilities: ['summon_avenger'], transformsInto: 'ne_chort' }),
-  unit(F, 'ne_chort', 'Chort', 8, ['melee'], { count: 0 }),
+  // HoS: Cow (collectible) is replaced by Bovine Defense Force when removed from the board.
+  unit(F, 'ne_cow', 'Cow', 0, ['ranged'], { abilities: ['summon_avenger'], transformsInto: 'ne_bovine_defense_force' }),
+  unit(F, 'ne_bovine_defense_force', 'Bovine Defense Force', 8, ['melee'], { count: 0 }),
   // ─ Specials ─
   special(F, 'ne_decoy', 'Decoy', 'decoy', 3),
   special(F, 'ne_horn', "Commander's Horn", 'horn', 3),

@@ -47,6 +47,7 @@
     "flavor": "Fear not the shadows, but the light."
   },
   "ne_cow": {
+    "ability": "When this card is removed from the battlefield, it summons Bovine Defense Force.",
     "flavor": "Grrrrr!"
   },
   "ne_decoy": {
@@ -618,5 +619,8 @@
   "sk_leader_bran": {
     "ability": "Units only lose half their Strength in bad weather conditions.",
     "flavor": "No one can replace Bran. Though they're sure to try."
+  },
+  "ne_bovine_defense_force": {
+    "ability": "Summoned when Cow is removed from the battlefield."
   }
 }

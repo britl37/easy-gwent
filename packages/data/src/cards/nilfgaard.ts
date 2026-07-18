@@ -22,8 +22,6 @@ export const NILFGAARD_CARDS: CardDef[] = [
   unit(F, 'nf_rainfarn', 'Rainfarn', 4, ['melee']),
   unit(F, 'nf_renuald', 'Renuald aep Matsen', 5, ['ranged']),
   unit(F, 'nf_morteisen', 'Morteisen', 3, ['melee']),
-  unit(F, 'nf_auckes', 'Auckes', 2, ['melee']),
-  unit(F, 'nf_serrit', 'Serrit', 2, ['melee']),
   unit(F, 'nf_sweers', 'Sweers', 2, ['ranged']),
   unit(F, 'nf_puttkammer', 'Puttkammer', 3, ['ranged']),
   unit(F, 'nf_cahir', 'Cahir Mawr Dyffryn aep Ceallach', 6, ['melee']),
@@ -35,5 +33,4 @@ export const NILFGAARD_CARDS: CardDef[] = [
   unit(F, 'nf_siege_technician', 'Siege Technician', 0, ['siege'], { abilities: ['medic'] }),
   unit(F, 'nf_fire_scorpion', 'Zerrikanian Fire Scorpion', 5, ['siege']),
   unit(F, 'nf_heavy_fire_scorpion', 'Heavy Zerrikanian Fire Scorpion', 10, ['siege']),
-  unit(F, 'nf_etolium', 'Vrygheff', 5, ['siege']),
 ];

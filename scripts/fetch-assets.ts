@@ -1,8 +1,13 @@
 /**
- * Download card images listed in scripts/asset-manifest.json into assets/cards/{id}.webp|png.
- * Resumable (skips existing files). Throttled. Does not commit binaries.
+ * Build-time download of card art from the Witcher wiki (URLs in asset-manifest.json).
  *
- * Usage: npx tsx scripts/fetch-assets.ts
+ * Copyrighted image binaries are written only to the local disk (assets/cards/) and
+ * must never be committed. Invoked automatically by `npm run build`.
+ *
+ * Env:
+ *   SKIP_FETCH_ASSETS=1  — no-op (used for offline code-only builds)
+ *
+ * Usage: npm run fetch-assets
  */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -69,8 +74,12 @@ async function download(url: string): Promise<Buffer> {
 }
 
 async function main() {
+  if (process.env.SKIP_FETCH_ASSETS === '1' || process.env.SKIP_FETCH_ASSETS === 'true') {
+    console.log('SKIP_FETCH_ASSETS set — not downloading card art');
+    return;
+  }
   if (!fs.existsSync(MANIFEST)) {
-    console.error(`Missing ${MANIFEST}. Run: npx tsx scripts/build-asset-manifest.ts`);
+    console.error(`Missing ${MANIFEST}. Run: npm run build-manifest`);
     process.exit(1);
   }
   const manifest = JSON.parse(fs.readFileSync(MANIFEST, 'utf8')) as Record<string, string>;

@@ -9,7 +9,9 @@
   "scripts": {
     "dev": "npm run dev -w @gwent/client",
     "dev:server": "npm run dev -w @gwent/server",
-    "build": "npm run build --workspaces --if-present",
+    "build": "npm run fetch-assets && npm run build:packages",
+    "build:packages": "npm run build --workspaces --if-present",
+    "build:code": "npm run build:packages",
     "start": "npm run start -w @gwent/server",
     "test": "vitest run",
     "build-manifest": "tsx scripts/build-asset-manifest.ts",

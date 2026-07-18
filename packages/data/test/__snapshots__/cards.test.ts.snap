@@ -4,12 +4,12 @@ exports[`card database > locks per-faction card counts (update deliberately when
 {
   "leaders": 22,
   "monsters": 37,
-  "neutral": 24,
+  "neutral": 23,
   "nilfgaard": 29,
   "northern_realms": 25,
   "scoiatael": 22,
   "skellige": 26,
-  "totalCopies": 249,
-  "totalDefs": 185,
+  "totalCopies": 248,
+  "totalDefs": 184,
 }
 `;

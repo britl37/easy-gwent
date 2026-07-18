@@ -9,7 +9,7 @@ export const NEUTRAL_CARDS: CardDef[] = [
   unit(F, 'ne_ciri', 'Cirilla Fiona Elen Riannon', 15, ['melee'], { hero: true }),
   unit(F, 'ne_yennefer', 'Yennefer of Vengerberg', 7, ['ranged'], { hero: true, abilities: ['medic'] }),
   unit(F, 'ne_triss', 'Triss Merigold', 7, ['melee'], { hero: true }),
-  unit(F, 'ne_avallach', "Avallac'h", 0, ['melee'], { hero: true, abilities: ['spy'] }),
+  // TW3 card name is Mysterious Elf (the character is Avallac'h; not a separate card).
   unit(F, 'ne_mysterious_elf', 'Mysterious Elf', 0, ['melee'], { hero: true, abilities: ['spy'] }),
   // ─ Units ─
   unit(F, 'ne_dandelion', 'Dandelion', 2, ['melee'], { abilities: ['horn'] }),

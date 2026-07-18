@@ -593,13 +593,19 @@ async function handleApi(req: http.IncomingMessage, res: http.ServerResponse, ur
   }
 }
 
-function trySendFile(filePath: string, res: http.ServerResponse, cache = false): boolean {
+function trySendFile(
+  filePath: string,
+  res: http.ServerResponse,
+  cache: 'immutable' | 'day' | 'none' = 'none',
+): boolean {
   if (!fs.existsSync(filePath) || fs.statSync(filePath).isDirectory()) return false;
   const ext = path.extname(filePath).toLowerCase();
   const headers: Record<string, string> = {
     'content-type': MIME[ext] ?? 'application/octet-stream',
   };
-  if (cache) headers['cache-control'] = 'public, max-age=86400';
+  if (cache === 'immutable') headers['cache-control'] = 'public, max-age=31536000, immutable';
+  else if (cache === 'day') headers['cache-control'] = 'public, max-age=86400';
+  else headers['cache-control'] = 'no-cache';
   res.writeHead(200, headers);
   fs.createReadStream(filePath).pipe(res);
   return true;
@@ -618,7 +624,7 @@ function serveStatic(req: http.IncomingMessage, res: http.ServerResponse): void 
       res.writeHead(403).end('Forbidden');
       return;
     }
-    if (trySendFile(filePath, res, true)) return;
+    if (trySendFile(filePath, res, 'day')) return;
     res.writeHead(404).end('Not found');
     return;
   }
@@ -640,7 +646,7 @@ function serveStatic(req: http.IncomingMessage, res: http.ServerResponse): void 
     return;
   }
 
-  if (trySendFile(filePath, res)) return;
+  if (trySendFile(filePath, res, rel.startsWith('/assets/') ? 'immutable' : 'none')) return;
   if (trySendFile(path.join(STATIC_DIR, 'index.html'), res)) return;
   res.writeHead(404).end('Not found');
 }

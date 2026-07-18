@@ -1,0 +1,15 @@
+
+> easy-gwent@0.1.0 start
+> npm run start -w @gwent/server
+
+
+> @gwent/server@0.1.0 start
+> tsx src/index.ts
+
+easy-gwent server listening on http://0.0.0.0:8787
+  static: /home/brit/easy-gwent/packages/client/dist
+  db: /home/brit/easy-gwent/packages/server/data/gwent.sqlite
+npm ERR! Lifecycle script `start` failed with error: 
+npm ERR! Error: command failed 
+npm ERR!   in workspace: @gwent/server@0.1.0 
+npm ERR!   at location: /home/brit/easy-gwent/packages/server 

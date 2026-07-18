@@ -46,10 +46,18 @@ interface RoomMeta {
   matchRecorded: boolean;
   /** Per-seat forfeit timers while a player is disconnected mid-game. */
   disconnectTimers: [NodeJS.Timeout | null, NodeJS.Timeout | null];
+  /** Last create/join/rejoin/action/rematch in this room — drives idle GC. */
+  lastActivity: number;
+  /** Per-seat rematch offers after a finished game. */
+  rematchVotes: [boolean, boolean];
 }
 
 /** How long a disconnected player has to rejoin before forfeiting. */
 const RECONNECT_GRACE_MS = Number(process.env.GWENT_GRACE_MS ?? 60_000);
+/** How long a room may wait for an opponent before its invite code expires. */
+const ROOM_WAIT_MS = Number(process.env.GWENT_ROOM_WAIT_MS ?? 30 * 60_000);
+/** How long a finished game lingers (rematch window) before the room is GC'd. */
+const POSTGAME_MS = Number(process.env.GWENT_POSTGAME_MS ?? 10 * 60_000);
 
 const connByWs = new Map<WebSocket, ConnState>();
 const roomMeta = new Map<string, RoomMeta>();
@@ -172,6 +180,39 @@ function destroyRoom(roomId: string): void {
   roomMeta.delete(roomId);
 }
 
+/** GC a room for inactivity: tell any connected seats, unbind them, drop it. */
+function expireRoom(roomId: string): void {
+  const meta = roomMeta.get(roomId);
+  if (meta) {
+    for (const seat of [0, 1] as const) {
+      const ws = meta.seats[seat];
+      if (!ws) continue;
+      if (ws.readyState === ws.OPEN) send(ws, { t: 'room_expired' });
+      const conn = connByWs.get(ws);
+      if (conn) {
+        conn.seat = null;
+        conn.roomId = null;
+      }
+    }
+  }
+  destroyRoom(roomId);
+}
+
+/** Periodic idle-room sweep: expire stale invite codes and lingering post-game rooms. */
+setInterval(() => {
+  const now = Date.now();
+  for (const [roomId, meta] of roomMeta) {
+    const room = rooms.get(roomId);
+    if (!room) {
+      roomMeta.delete(roomId);
+      continue;
+    }
+    const idle = now - meta.lastActivity;
+    if (room.state === null && idle > ROOM_WAIT_MS) expireRoom(roomId);
+    else if (room.state?.phase === 'finished' && idle > POSTGAME_MS) expireRoom(roomId);
+  }
+}, 60_000).unref();
+
 function bindSeat(ws: WebSocket, roomId: string, seat: PlayerId, userId: string, username: string): void {
   let meta = roomMeta.get(roomId);
   if (!meta) {
@@ -181,9 +222,12 @@ function bindSeat(ws: WebSocket, roomId: string, seat: PlayerId, userId: string,
       seats: [null, null],
       matchRecorded: false,
       disconnectTimers: [null, null],
+      lastActivity: Date.now(),
+      rematchVotes: [false, false],
     };
     roomMeta.set(roomId, meta);
   }
+  meta.lastActivity = Date.now();
   const timer = meta.disconnectTimers[seat];
   if (timer) {
     clearTimeout(timer);
@@ -399,8 +443,49 @@ function handleMessage(ws: WebSocket, raw: string): void {
         error(ws, result.code, result.message);
         return;
       }
+      const actMeta = roomMeta.get(conn.roomId);
+      if (actMeta) actMeta.lastActivity = Date.now();
       broadcastState(conn.roomId);
       maybeRecordNaturalFinish(conn.roomId);
+      return;
+    }
+
+    case 'rematch': {
+      const conn = connByWs.get(ws);
+      if (!conn || conn.seat === null || !conn.roomId) {
+        error(ws, 'not_in_room', 'Not in a room');
+        return;
+      }
+      const roomId = conn.roomId;
+      const room = rooms.get(roomId);
+      const meta = roomMeta.get(roomId);
+      if (!room?.state || !meta || room.state.phase !== 'finished') {
+        error(ws, 'bad_message', 'No finished game to rematch');
+        return;
+      }
+      meta.lastActivity = Date.now();
+      if (meta.rematchVotes[conn.seat]) return; // duplicate offer
+      meta.rematchVotes[conn.seat] = true;
+
+      const other = meta.seats[1 - conn.seat];
+      if (!meta.rematchVotes[1 - conn.seat]) {
+        if (other && other.readyState === other.OPEN) send(other, { t: 'rematch_requested' });
+        return;
+      }
+
+      // Both agreed → fresh game, same decks, new seed.
+      const result = rooms.reset(roomId);
+      if (!result.ok) {
+        error(ws, result.code, result.message);
+        return;
+      }
+      meta.matchRecorded = false;
+      meta.rematchVotes = [false, false];
+      for (const seat of [0, 1] as const) {
+        const s = meta.seats[seat];
+        if (s && s.readyState === s.OPEN) send(s, { t: 'rematch_started' });
+      }
+      broadcastState(roomId);
       return;
     }
 

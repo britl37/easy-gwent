@@ -29,7 +29,9 @@ export type ClientMsg =
   | { t: 'action'; action: Action }
   | { t: 'leave' }
   /** Resume a seat in an active game after a dropped connection. */
-  | { t: 'rejoin'; roomId: string };
+  | { t: 'rejoin'; roomId: string }
+  /** Offer / accept a rematch after a finished game. Starts when both seats send it. */
+  | { t: 'rematch' };
 
 /** Messages the server sends to the client. */
 export type ServerMsg =
@@ -54,7 +56,13 @@ export type ServerMsg =
   | { t: 'opponent_left' }
   /** Opponent's socket dropped; they have `graceMs` to rejoin before forfeit. */
   | { t: 'opponent_disconnected'; graceMs: number }
-  | { t: 'opponent_reconnected' };
+  | { t: 'opponent_reconnected' }
+  /** Opponent offered a rematch. */
+  | { t: 'rematch_requested' }
+  /** Both seats agreed to a rematch; a fresh `state` snapshot follows. */
+  | { t: 'rematch_started' }
+  /** Room was garbage-collected for inactivity. */
+  | { t: 'room_expired' };
 
 export type ProtocolErrorCode =
   | 'room_not_found'

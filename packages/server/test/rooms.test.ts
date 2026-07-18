@@ -71,4 +71,35 @@ describe('Rooms', () => {
       expect(r.ok).toBe(true);
     }
   });
+
+  it('reset starts a fresh game reusing both decks (rematch)', () => {
+    let seed = 1;
+    const rooms = new Rooms(() => seed++);
+    const a = rooms.create(testDeck('northern_realms'));
+    if (!a.ok) throw new Error('create failed');
+    const j = rooms.join(a.value.id, testDeck('nilfgaard'));
+    if (!j.ok || !j.value.state) throw new Error('join failed');
+
+    const before = j.value.state;
+    const reset = rooms.reset(a.value.id);
+    expect(reset.ok).toBe(true);
+    if (!reset.ok) return;
+    const after = reset.value.state!;
+    expect(after).not.toBe(before);
+    expect(after.phase).toBe('redraw');
+    // Same decks are reused across the rematch.
+    expect(reset.value.decks[0]).toEqual(testDeck('northern_realms'));
+    expect(reset.value.decks[1]).toEqual(testDeck('nilfgaard'));
+  });
+
+  it('reset fails for a waiting or missing room', () => {
+    const rooms = new Rooms(() => 1);
+    const a = rooms.create(testDeck('northern_realms'));
+    if (!a.ok) throw new Error('create failed');
+    const waiting = rooms.reset(a.value.id); // only one deck present
+    expect(waiting.ok).toBe(false);
+    if (!waiting.ok) expect(waiting.code).toBe('room_not_found');
+    const missing = rooms.reset('zzzzz');
+    expect(missing.ok).toBe(false);
+  });
 });

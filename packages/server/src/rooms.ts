@@ -76,6 +76,14 @@ export class Rooms {
     }
   }
 
+  /** Start a fresh game in an existing room, reusing both decks with a new seed. */
+  reset(roomId: string): RoomResult<Room> {
+    const room = this.rooms.get(roomId);
+    if (!room || room.decks[1] === null) return err('room_not_found', `No completed game in room ${roomId}`);
+    room.state = createGame(this.nextSeed(), [room.decks[0], room.decks[1]]);
+    return { ok: true, value: room };
+  }
+
   remove(roomId: string): void {
     this.rooms.delete(roomId);
   }

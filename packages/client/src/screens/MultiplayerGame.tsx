@@ -30,6 +30,8 @@ export function MultiplayerGameScreen({
   const [matchLine, setMatchLine] = useState<string | null>(null);
   const [updatedUser, setUpdatedUser] = useState<UserPublic | null>(null);
   const [opponentLeft, setOpponentLeft] = useState(false);
+  const [rematchOffered, setRematchOffered] = useState(false); // we offered
+  const [rematchRequested, setRematchRequested] = useState(false); // opponent offered
 
   useEffect(() => {
     const onMsg = (msg: ServerMsg) => {
@@ -68,6 +70,23 @@ export function MultiplayerGameScreen({
       if (msg.t === 'opponent_left') {
         setOpponentLeft(true);
         setBanner('Opponent left the game.');
+        return;
+      }
+      if (msg.t === 'rematch_requested') {
+        setRematchRequested(true);
+        return;
+      }
+      if (msg.t === 'rematch_started') {
+        // Fresh game, same decks; a new `state` snapshot follows.
+        setRematchOffered(false);
+        setRematchRequested(false);
+        setMatchLine(null);
+        setBanner(null);
+        return;
+      }
+      if (msg.t === 'room_expired') {
+        setOpponentLeft(true);
+        setBanner('Room expired due to inactivity.');
         return;
       }
       if (msg.t === 'match_result') {
@@ -294,6 +313,25 @@ export function MultiplayerGameScreen({
                   ))}
                 </tbody>
               </table>
+            )}
+            {finished && !opponentLeft && (
+              <button
+                className="btn"
+                disabled={rematchOffered}
+                onClick={() => {
+                  setRematchOffered(true);
+                  session.socket.send({ t: 'rematch' });
+                }}
+              >
+                {rematchOffered
+                  ? 'Rematch offered — waiting for opponent…'
+                  : rematchRequested
+                    ? 'Accept rematch'
+                    : 'Rematch'}
+              </button>
+            )}
+            {rematchRequested && !rematchOffered && (
+              <p className="menu-note">Your opponent wants a rematch!</p>
             )}
             <button className="btn" onClick={() => onExit(updatedUser ?? undefined)}>
               Back to menu

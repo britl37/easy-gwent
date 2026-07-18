@@ -140,7 +140,7 @@ export function MultiplayerGameScreen({
     };
   }, [session]);
 
-  const { reveal, turnToast } = usePlayReveals(state, human);
+  const { reveal, turnBanner } = usePlayReveals(state, human);
 
   const me = state?.players[human];
   const myMove =
@@ -259,7 +259,7 @@ export function MultiplayerGameScreen({
     <div className="game-screen">
       <PlayReveal
         reveal={reveal}
-        turnToast={turnToast}
+        turnBanner={turnBanner}
         mine={(r) => r.player === human}
         opponentName={session.opponentUsername}
       />

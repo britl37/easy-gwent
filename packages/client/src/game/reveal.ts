@@ -5,11 +5,16 @@ import { useEffect, useRef, useState } from 'react';
 const ROWS: Row[] = ['melee', 'ranged', 'siege'];
 
 /** Delay between paced state applications (AI steps / MP snapshots). */
-export const STEP_MS = 700;
+export const STEP_MS = 1000;
+/** Hold after the human's play (1s) plus a beat before the NPC's response (1s). */
+export const FIRST_STEP_MS = 2000;
 /** How long a single play reveal stays on screen. */
 export const REVEAL_MS = 900;
-/** How long the "Your turn" toast stays on screen. */
-export const TURN_TOAST_MS = 1100;
+/** How long the turn banner stays on screen. */
+export const TURN_TOAST_MS = 1400;
+
+/** Whose turn is being announced. */
+export type TurnBanner = 'you' | 'opponent';
 
 export interface RevealEvent {
   key: number;
@@ -38,13 +43,13 @@ function unitMap(s: GameState): Map<string, { cardId: string; player: PlayerId; 
  */
 export function usePlayReveals(state: GameState | null, me: PlayerId) {
   const [reveal, setReveal] = useState<RevealEvent | null>(null);
-  const [turnToast, setTurnToast] = useState(false);
+  const [turnBanner, setTurnBanner] = useState<TurnBanner | null>(null);
   const prevRef = useRef<GameState | null>(null);
   const keyRef = useRef(0);
   const queueRef = useRef<RevealEvent[]>([]);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const prevMyMoveRef = useRef(false);
+  const prevWhoseRef = useRef<TurnBanner | null>(null);
 
   useEffect(() => {
     const prev = prevRef.current;
@@ -66,18 +71,22 @@ export function usePlayReveals(state: GameState | null, me: PlayerId) {
       if (!timerRef.current) drainQueue();
     }
 
-    // "Your turn" toast on the rising edge of control returning to me.
-    const myMove =
-      state.phase === 'play' &&
-      !state.pendingChoice &&
-      state.turn === me &&
-      !state.players[me].passed;
-    if (myMove && !prevMyMoveRef.current && prev) {
-      setTurnToast(true);
+    // Turn banner on any change of whose move it is (yours or the opponent's).
+    const other = (1 - me) as PlayerId;
+    const whose: TurnBanner | null =
+      state.phase !== 'play' || state.pendingChoice
+        ? null
+        : state.turn === me && !state.players[me].passed
+          ? 'you'
+          : state.turn === other && !state.players[other].passed
+            ? 'opponent'
+            : null;
+    if (whose && whose !== prevWhoseRef.current && prev) {
+      setTurnBanner(whose);
       if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
-      toastTimerRef.current = setTimeout(() => setTurnToast(false), TURN_TOAST_MS);
+      toastTimerRef.current = setTimeout(() => setTurnBanner(null), TURN_TOAST_MS);
     }
-    prevMyMoveRef.current = myMove;
+    prevWhoseRef.current = whose;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state, me]);
 
@@ -100,5 +109,5 @@ export function usePlayReveals(state: GameState | null, me: PlayerId) {
     [],
   );
 
-  return { reveal, turnToast };
+  return { reveal, turnBanner };
 }

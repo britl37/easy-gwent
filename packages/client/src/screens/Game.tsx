@@ -8,7 +8,7 @@ import { PlayReveal } from '../components/PlayReveal.tsx';
 import { LogPanel, StatusColumn } from '../components/SidePanel.tsx';
 import { loadDeck } from '../game/decks.ts';
 import { HUMAN, humanActSequence, newLocalGame, starterDeck, type Difficulty } from '../game/localGame.ts';
-import { STEP_MS, usePlayReveals } from '../game/reveal.ts';
+import { FIRST_STEP_MS, STEP_MS, usePlayReveals } from '../game/reveal.ts';
 
 export interface GameScreenProps {
   faction: PlayableFaction;
@@ -68,13 +68,14 @@ export function GameScreen({ faction, aiFaction, difficulty, onExit }: GameScree
       if (seq.length > 1) {
         pendingRef.current = seq.slice(1);
         setAnimating(true);
-        stepTimerRef.current = setTimeout(stepPending, STEP_MS);
+        // Hold after the human's play, then a beat before the AI responds.
+        stepTimerRef.current = setTimeout(stepPending, FIRST_STEP_MS);
       }
       return seq[0]!;
     });
   };
 
-  const { reveal, turnToast } = usePlayReveals(state, HUMAN);
+  const { reveal, turnBanner } = usePlayReveals(state, HUMAN);
 
   const selectedPlays = useMemo<PlayCardAction[]>(() => {
     if (selected === null) return [];
@@ -157,7 +158,7 @@ export function GameScreen({ faction, aiFaction, difficulty, onExit }: GameScree
     <div className="game-screen">
       <PlayReveal
         reveal={reveal}
-        turnToast={turnToast}
+        turnBanner={turnBanner}
         mine={(r) => r.player === HUMAN}
         opponentName="Opponent"
       />

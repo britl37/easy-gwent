@@ -509,12 +509,31 @@ body::before {
   from { transform: translateY(14px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
 }
+/* Reduced motion: show reveals/banners statically instead of animating.
+   NOTE: `animation-duration: 0.01ms` would be wrong here — reveal-fade and
+   banner-in-out end at opacity 0 with `both` fill, so a near-instant animation
+   leaves the element permanently invisible. JS timers already remove these
+   elements after a fixed time, so `animation: none` gives a static toast. */
 @media (prefers-reduced-motion: reduce) {
   .play-reveal, .play-reveal-inner, .turn-banner, .board-row .card-row, .hand .card-hand {
-    animation-duration: 0.01ms !important;
+    animation: none !important;
   }
 }
 .reduce-motion .play-reveal, .reduce-motion .play-reveal-inner, .reduce-motion .turn-banner,
 .reduce-motion .board-row .card-row, .reduce-motion .hand .card-hand {
-  animation-duration: 0.01ms !important;
+  animation: none !important;
+}
+
+/* Small persistent room-code tag during an MP game (needed to rejoin from
+   another device or after a page reload). */
+.room-tag {
+  position: fixed;
+  left: 8px;
+  bottom: 6px;
+  z-index: 40;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: rgba(216, 205, 180, 0.55);
+  font-family: 'Cinzel', serif;
+  pointer-events: none;
 }

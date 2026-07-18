@@ -14,6 +14,7 @@ import { Hand } from '../components/Hand.tsx';
 import { PlayReveal } from '../components/PlayReveal.tsx';
 import { LogPanel, StatusColumn } from '../components/SidePanel.tsx';
 import { STEP_MS, usePlayReveals } from '../game/reveal.ts';
+import { clearActiveRoom, saveActiveRoom } from '../net/activeRoom.ts';
 import { getToken } from '../net/auth.ts';
 import type { MultiplayerSession } from './Lobby.tsx';
 
@@ -71,6 +72,7 @@ export function MultiplayerGameScreen({
       }
       if (msg.t === 'error') {
         if (msg.code === 'rejoin_failed') {
+          clearActiveRoom();
           setOpponentLeft(true);
           setBanner('Could not resume the game — it is no longer available.');
           return;
@@ -97,6 +99,7 @@ export function MultiplayerGameScreen({
         return;
       }
       if (msg.t === 'opponent_left') {
+        clearActiveRoom();
         setOpponentLeft(true);
         setBanner('Opponent left the game.');
         return;
@@ -107,6 +110,7 @@ export function MultiplayerGameScreen({
       }
       if (msg.t === 'rematch_started') {
         // Fresh game, same decks; a new `state` snapshot follows.
+        saveActiveRoom(session.roomId);
         setRematchOffered(false);
         setRematchRequested(false);
         setMatchLine(null);
@@ -114,11 +118,14 @@ export function MultiplayerGameScreen({
         return;
       }
       if (msg.t === 'room_expired') {
+        clearActiveRoom();
         setOpponentLeft(true);
         setBanner('Room expired due to inactivity.');
         return;
       }
       if (msg.t === 'match_result') {
+        // Match recorded server-side — rejoin is no longer possible.
+        clearActiveRoom();
         setUpdatedUser(msg.you);
         const stats = `${msg.you.wins}W–${msg.you.losses}L–${msg.you.draws}D`;
         if (msg.result === 'win') setMatchLine(`Victory! (${stats})`);
@@ -257,6 +264,7 @@ export function MultiplayerGameScreen({
 
   return (
     <div className="game-screen">
+      <div className="room-tag">room {session.roomId}</div>
       <PlayReveal
         reveal={reveal}
         turnBanner={turnBanner}

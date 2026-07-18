@@ -2,6 +2,7 @@ import type { PlayableFaction } from '@gwent/data';
 import type { ServerMsg, UserPublic } from '@gwent/engine';
 import { useEffect, useRef, useState } from 'react';
 import { loadDeck } from '../game/decks.ts';
+import { clearActiveRoom, getActiveRoom, saveActiveRoom } from '../net/activeRoom.ts';
 import { getToken } from '../net/auth.ts';
 import { GwentSocket } from '../net/socket.ts';
 
@@ -36,6 +37,7 @@ export function LobbyScreen({
   const [roomId, setRoomId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [authed, setAuthed] = useState(false);
+  const [resumeRoom, setResumeRoom] = useState<string | null>(getActiveRoom());
   const socketRef = useRef<GwentSocket | null>(null);
   const joinedRef = useRef(false);
 
@@ -51,6 +53,14 @@ export function LobbyScreen({
     socketRef.current = sock;
     sock.connect((msg: ServerMsg) => {
       if (msg.t === 'error') {
+        if (msg.code === 'rejoin_failed') {
+          // The stored game is gone (finished, forfeited, or GC'd).
+          clearActiveRoom();
+          setResumeRoom(null);
+          setError('That game is no longer available.');
+          setStatus('Connected. Create a room or join with a code.');
+          return;
+        }
         setError(`${msg.code}: ${msg.message}`);
         return;
       }
@@ -69,6 +79,7 @@ export function LobbyScreen({
       if (msg.t === 'joined') {
         if (joinedRef.current) return;
         joinedRef.current = true;
+        saveActiveRoom(msg.roomId);
         onJoined({
           socket: sock,
           roomId: msg.roomId,
@@ -108,6 +119,13 @@ export function LobbyScreen({
     setStatus('Creating room…');
   };
 
+  const resume = () => {
+    if (!resumeRoom) return;
+    setError(null);
+    socketRef.current?.send({ t: 'rejoin', roomId: resumeRoom });
+    setStatus(`Resuming ${resumeRoom}…`);
+  };
+
   const join = () => {
     setError(null);
     const id = joinCode.trim().toLowerCase();
@@ -141,6 +159,12 @@ export function LobbyScreen({
             </button>
           ))}
         </div>
+
+        {resumeRoom && (
+          <button className="btn btn-primary" onClick={resume} disabled={!!roomId || !authed}>
+            Resume game ({resumeRoom})
+          </button>
+        )}
 
         <button className="btn btn-primary" onClick={create} disabled={!!roomId || !authed}>
           Create room

@@ -35,12 +35,15 @@ export function StatusColumn({
           {ps.passed && <span className="passed"> · PASSED</span>}
         </div>
         <div className="seat-leader">
-          {byId(ps.leaderId).name}
-          {ps.leaderUsed ? ' (used)' : mine && canPlayLeader ? (
-            <button className="btn btn-small" onClick={onLeader}>
-              Use
-            </button>
-          ) : null}
+          <div className="seat-leader-row">
+            {byId(ps.leaderId).name}
+            {ps.leaderUsed ? ' (used)' : mine && canPlayLeader ? (
+              <button className="btn btn-small" onClick={onLeader}>
+                Use
+              </button>
+            ) : null}
+          </div>
+          <div className="seat-leader-ability">{getCardText(byId(ps.leaderId)).ability}</div>
         </div>
       </div>
     );

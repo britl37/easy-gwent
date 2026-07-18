@@ -213,6 +213,8 @@ body::before {
 .seat-info { font-size: 13px; color: #b8a988; }
 .passed { color: #e06c5c; font-weight: bold; }
 .seat-leader { font-size: 13px; margin-top: 6px; }
+.seat-leader-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.seat-leader-ability { font-size: 11px; color: #8a9aa8; margin-top: 2px; line-height: 1.35; }
 .weather-box {
   text-align: center; display: flex; flex-direction: column; gap: 4px;
   font-size: 14px; color: #9fc2d6;

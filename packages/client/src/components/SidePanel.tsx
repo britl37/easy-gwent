@@ -1,5 +1,5 @@
 import { byId, getCardText } from '@gwent/data';
-import type { GameState, PlayerId, WeatherKind } from '@gwent/engine';
+import { scores, type GameState, type PlayerId, type WeatherKind } from '@gwent/engine';
 import { Card } from './Card.tsx';
 
 const WEATHER_LABEL: Record<WeatherKind, string> = {
@@ -23,28 +23,34 @@ export function StatusColumn({
 }) {
   const opp: PlayerId = human === 0 ? 1 : 0;
   const weather = (Object.keys(state.weather) as WeatherKind[]).filter((w) => state.weather[w]);
+  const totals = scores(state);
 
   const seat = (p: PlayerId, mine: boolean) => {
     const ps = state.players[p];
+    const other: PlayerId = p === 0 ? 1 : 0;
+    const leading = totals[p] > totals[other];
     return (
       <div className={`seat ${mine ? 'seat-mine' : ''} ${state.turn === p && state.phase === 'play' ? 'seat-active' : ''}`}>
-        <div className="seat-name">{mine ? 'You' : opponentName ?? 'Opponent'}</div>
-        <div className="seat-gems">{'◆'.repeat(ps.gems)}{'◇'.repeat(Math.max(0, 2 - ps.gems))}</div>
-        <div className="seat-info">
-          Hand {ps.hand.length} · Deck {ps.deck.length}
-          {ps.passed && <span className="passed"> · PASSED</span>}
-        </div>
-        <div className="seat-leader">
-          <div className="seat-leader-row">
-            {byId(ps.leaderId).name}
-            {ps.leaderUsed ? ' (used)' : mine && canPlayLeader ? (
-              <button className="btn btn-small" onClick={onLeader}>
-                Use
-              </button>
-            ) : null}
+        <div className="seat-main">
+          <div className="seat-name">{mine ? 'You' : opponentName ?? 'Opponent'}</div>
+          <div className="seat-gems">{'◆'.repeat(ps.gems)}{'◇'.repeat(Math.max(0, 2 - ps.gems))}</div>
+          <div className="seat-info">
+            Hand {ps.hand.length} · Deck {ps.deck.length}
+            {ps.passed && <span className="passed"> · PASSED</span>}
           </div>
-          <div className="seat-leader-ability">{getCardText(byId(ps.leaderId)).ability}</div>
+          <div className="seat-leader">
+            <div className="seat-leader-row">
+              {byId(ps.leaderId).name}
+              {ps.leaderUsed ? ' (used)' : mine && canPlayLeader ? (
+                <button className="btn btn-small" onClick={onLeader}>
+                  Use
+                </button>
+              ) : null}
+            </div>
+            <div className="seat-leader-ability">{getCardText(byId(ps.leaderId)).ability}</div>
+          </div>
         </div>
+        <div className={`seat-score ${leading ? 'seat-score-lead' : ''}`}>{totals[p]}</div>
       </div>
     );
   };

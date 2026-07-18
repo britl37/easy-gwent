@@ -1,5 +1,5 @@
 import { byId, type Row } from '@gwent/data';
-import { effectiveStrength, rowScore, scores, type GameState, type PlayerId } from '@gwent/engine';
+import { effectiveStrength, rowScore, type GameState, type PlayerId } from '@gwent/engine';
 import { Card } from './Card.tsx';
 
 const ROW_ORDER_TOP: Row[] = ['siege', 'ranged', 'melee'];
@@ -45,6 +45,9 @@ function BoardRow({
       onClick={targetable ? () => onRowClick?.(row) : undefined}
     >
       <div className={`row-badge ${rs.hornActive ? 'horn' : ''}`}>{rowScore(state, player, row)}</div>
+      <div className={`row-horn ${rs.hornActive ? 'horn-active' : ''}`} title={rs.hornActive ? 'Commander’s Horn active' : 'Horn slot'}>
+        📯
+      </div>
       <div className="row-units">
         {rs.units.map((u) => {
           const canTarget = mine && targetInstanceIds?.includes(u.instanceId);
@@ -66,13 +69,10 @@ function BoardRow({
 
 export function Board({ state, human, targetRows, onRowClick, targetInstanceIds, onUnitClick, onHover }: BoardProps) {
   const opp: PlayerId = human === 0 ? 1 : 0;
-  const [s0, s1] = scores(state);
-  const [oppScore, myScore] = human === 0 ? [s1, s0] : [s0, s1];
 
   return (
     <div className="board">
       <div className="board-half board-opponent">
-        <div className="half-score">{oppScore}</div>
         {ROW_ORDER_TOP.map((row) => (
           <BoardRow key={row} state={state} player={opp} row={row} mine={false} targetable={false} onHover={onHover} />
         ))}
@@ -93,7 +93,6 @@ export function Board({ state, human, targetRows, onRowClick, targetInstanceIds,
             onHover={onHover}
           />
         ))}
-        <div className="half-score">{myScore}</div>
       </div>
     </div>
   );

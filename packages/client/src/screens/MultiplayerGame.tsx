@@ -7,11 +7,13 @@ import {
   type ServerMsg,
   type UserPublic,
 } from '@gwent/engine';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Board } from '../components/Board.tsx';
 import { CarouselPicker } from '../components/CarouselPicker.tsx';
 import { Hand } from '../components/Hand.tsx';
+import { PlayReveal } from '../components/PlayReveal.tsx';
 import { LogPanel, StatusColumn } from '../components/SidePanel.tsx';
+import { STEP_MS, usePlayReveals } from '../game/reveal.ts';
 import { getToken } from '../net/auth.ts';
 import type { MultiplayerSession } from './Lobby.tsx';
 
@@ -33,11 +35,38 @@ export function MultiplayerGameScreen({
   const [rematchOffered, setRematchOffered] = useState(false); // we offered
   const [rematchRequested, setRematchRequested] = useState(false); // opponent offered
 
+  // Pace incoming snapshots so back-to-back plays (e.g. opponent card + its
+  // effects) land one at a time instead of all in one frame. The server remains
+  // authoritative; this only delays display. A burst cap flushes to the latest
+  // snapshot so reconnects/rejoins never lag behind reality.
+  const snapQueueRef = useRef<GameState[]>([]);
+  const snapTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const drainSnaps = () => {
+    const q = snapQueueRef.current;
+    if (q.length > 3) snapQueueRef.current = q.slice(-1); // catch up after reconnect
+    const next = snapQueueRef.current.shift();
+    if (!next) {
+      snapTimerRef.current = null;
+      return;
+    }
+    setState(next);
+    setSelected(null);
+    snapTimerRef.current = setTimeout(drainSnaps, STEP_MS);
+  };
+
+  useEffect(
+    () => () => {
+      if (snapTimerRef.current) clearTimeout(snapTimerRef.current);
+    },
+    [],
+  );
+
   useEffect(() => {
     const onMsg = (msg: ServerMsg) => {
       if (msg.t === 'state') {
-        setState(msg.state);
-        setSelected(null);
+        snapQueueRef.current.push(msg.state);
+        if (!snapTimerRef.current) drainSnaps();
         return;
       }
       if (msg.t === 'error') {
@@ -110,6 +139,8 @@ export function MultiplayerGameScreen({
       session.socket.close();
     };
   }, [session]);
+
+  const { reveal, turnToast } = usePlayReveals(state, human);
 
   const me = state?.players[human];
   const myMove =
@@ -226,6 +257,12 @@ export function MultiplayerGameScreen({
 
   return (
     <div className="game-screen">
+      <PlayReveal
+        reveal={reveal}
+        turnToast={turnToast}
+        mine={(r) => r.player === human}
+        opponentName={session.opponentUsername}
+      />
       <StatusColumn
         state={state}
         human={human}

@@ -78,3 +78,36 @@ export function humanAct(s: GameState, action: Action, difficulty: Difficulty = 
     throw e;
   }
 }
+
+/**
+ * Like `humanAct`, but returns every intermediate state so the UI can pace the
+ * AI's responses: [afterHumanAction, afterAiAction1, afterAiAction2, ...].
+ * Identical outcome to `humanAct` (same rng derivation); the last element is
+ * the state where control has returned to the human (or the game is finished).
+ * Returns [s] unchanged if the action was illegal.
+ */
+export function humanActSequence(
+  s: GameState,
+  action: Action,
+  difficulty: Difficulty = 'easy',
+): GameState[] {
+  try {
+    let cur = applyAction(s, action);
+    const states: GameState[] = [cur];
+    const choose = CHOOSERS[difficulty];
+    const rng = createRng((cur.rngState ^ 0x9e3779b9) >>> 0);
+    let steps = 0;
+    while (cur.phase !== 'finished' && currentActor(cur) === AI) {
+      if (++steps > 200) throw new Error('AI loop did not terminate');
+      cur = applyAction(cur, choose(cur, AI, rng));
+      states.push(cur);
+    }
+    return states;
+  } catch (e) {
+    if (e instanceof IllegalActionError) {
+      console.warn('Illegal action ignored:', e.message);
+      return [s];
+    }
+    throw e;
+  }
+}

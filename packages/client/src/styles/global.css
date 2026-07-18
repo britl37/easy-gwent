@@ -400,3 +400,113 @@ body::before {
   .card-clickable:hover { transform: none; }
   .preview-empty::after { content: " (tap a card)"; }
 }
+
+/* ---- Play reveal / turn feedback (roadmap #4/#7) ---- */
+.play-reveal {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 60;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center, rgba(10, 8, 4, 0.45), rgba(10, 8, 4, 0) 70%);
+  animation: reveal-fade 0.9s ease both;
+}
+.play-reveal-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  animation: reveal-pop 0.35s cubic-bezier(0.2, 1.4, 0.4, 1) both;
+}
+.play-reveal-inner .card-big {
+  box-shadow: 0 0 0 2px #c9a227, 0 12px 40px rgba(0, 0, 0, 0.7);
+}
+.play-reveal-theirs .card-big {
+  box-shadow: 0 0 0 2px #b0463c, 0 12px 40px rgba(0, 0, 0, 0.7);
+}
+.play-reveal-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 14px;
+  border-radius: 8px;
+  background: rgba(18, 14, 8, 0.92);
+  border: 1px solid #3a3226;
+  font-family: 'Cinzel', serif;
+  text-align: center;
+}
+.play-reveal-label strong {
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  color: #c9a227;
+}
+.play-reveal-theirs .play-reveal-label strong {
+  color: #d98b7f;
+}
+.play-reveal-label span {
+  font-size: 12px;
+  color: #d8cdb4;
+}
+@keyframes reveal-pop {
+  from { transform: scale(0.6) translateY(24px); opacity: 0; }
+  to { transform: scale(1) translateY(0); opacity: 1; }
+}
+@keyframes reveal-fade {
+  0% { opacity: 0; }
+  12% { opacity: 1; }
+  82% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.turn-toast {
+  position: fixed;
+  left: 50%;
+  top: 34%;
+  transform: translateX(-50%);
+  z-index: 55;
+  pointer-events: none;
+  padding: 10px 26px;
+  border-radius: 10px;
+  background: rgba(18, 14, 8, 0.92);
+  border: 1px solid #c9a227;
+  color: #e8dcbe;
+  font-family: 'Cinzel', serif;
+  font-size: 18px;
+  letter-spacing: 0.12em;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.6);
+  animation: toast-in-out 1.1s ease both;
+}
+@keyframes toast-in-out {
+  0% { opacity: 0; transform: translateX(-50%) translateY(10px); }
+  15% { opacity: 1; transform: translateX(-50%) translateY(0); }
+  80% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* Units sliding onto a row, and cards drawn into the hand. */
+.board-row .card-row {
+  animation: unit-land 0.3s ease-out both;
+}
+.hand .card-hand {
+  animation: hand-draw 0.25s ease-out both;
+}
+@keyframes unit-land {
+  from { transform: translateY(-10px) scale(0.9); opacity: 0; }
+  to { transform: translateY(0) scale(1); opacity: 1; }
+}
+@keyframes hand-draw {
+  from { transform: translateY(14px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .play-reveal, .play-reveal-inner, .turn-toast, .board-row .card-row, .hand .card-hand {
+    animation-duration: 0.01ms !important;
+  }
+}
+.reduce-motion .play-reveal, .reduce-motion .play-reveal-inner, .reduce-motion .turn-toast,
+.reduce-motion .board-row .card-row, .reduce-motion .hand .card-hand {
+  animation-duration: 0.01ms !important;
+}

@@ -1,12 +1,14 @@
 import type { PlayableFaction, Row } from '@gwent/data';
 import { legalActions, type Action, type GameState, type PlayCardAction } from '@gwent/engine';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Board } from '../components/Board.tsx';
 import { CarouselPicker } from '../components/CarouselPicker.tsx';
 import { Hand } from '../components/Hand.tsx';
+import { PlayReveal } from '../components/PlayReveal.tsx';
 import { LogPanel, StatusColumn } from '../components/SidePanel.tsx';
 import { loadDeck } from '../game/decks.ts';
-import { HUMAN, humanAct, newLocalGame, starterDeck, type Difficulty } from '../game/localGame.ts';
+import { HUMAN, humanActSequence, newLocalGame, starterDeck, type Difficulty } from '../game/localGame.ts';
+import { STEP_MS, usePlayReveals } from '../game/reveal.ts';
 
 export interface GameScreenProps {
   faction: PlayableFaction;
@@ -34,10 +36,45 @@ export function GameScreen({ faction, aiFaction, difficulty, onExit }: GameScree
     [state],
   );
 
-  const dispatch = (a: Action) => {
-    setSelected(null);
-    setState((s) => humanAct(s, a, difficulty));
+  // Paced AI: apply the human action instantly, then step the AI's responses
+  // one state at a time so each play is visible.
+  const pendingRef = useRef<GameState[]>([]);
+  const stepTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [animating, setAnimating] = useState(false);
+
+  const stepPending = () => {
+    const next = pendingRef.current.shift();
+    if (!next) {
+      stepTimerRef.current = null;
+      setAnimating(false);
+      return;
+    }
+    setState(next);
+    stepTimerRef.current = setTimeout(stepPending, STEP_MS);
   };
+
+  useEffect(
+    () => () => {
+      if (stepTimerRef.current) clearTimeout(stepTimerRef.current);
+    },
+    [],
+  );
+
+  const dispatch = (a: Action) => {
+    if (animating) return;
+    setSelected(null);
+    setState((s) => {
+      const seq = humanActSequence(s, a, difficulty);
+      if (seq.length > 1) {
+        pendingRef.current = seq.slice(1);
+        setAnimating(true);
+        stepTimerRef.current = setTimeout(stepPending, STEP_MS);
+      }
+      return seq[0]!;
+    });
+  };
+
+  const { reveal, turnToast } = usePlayReveals(state, HUMAN);
 
   const selectedPlays = useMemo<PlayCardAction[]>(() => {
     if (selected === null) return [];
@@ -118,6 +155,12 @@ export function GameScreen({ faction, aiFaction, difficulty, onExit }: GameScree
 
   return (
     <div className="game-screen">
+      <PlayReveal
+        reveal={reveal}
+        turnToast={turnToast}
+        mine={(r) => r.player === HUMAN}
+        opponentName="Opponent"
+      />
       <StatusColumn
         state={state}
         human={HUMAN}

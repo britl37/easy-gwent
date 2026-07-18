@@ -19,6 +19,7 @@ export function MenuScreen({
   onEditDeck,
   onMultiplayer,
   onLeaderboard,
+  onSettings,
   onAccount,
   onLogout,
 }: {
@@ -27,6 +28,7 @@ export function MenuScreen({
   onEditDeck: (faction: PlayableFaction) => void;
   onMultiplayer: () => void;
   onLeaderboard: () => void;
+  onSettings: () => void;
   onAccount: () => void;
   onLogout: () => void;
 }) {
@@ -91,6 +93,9 @@ export function MenuScreen({
         </button>
         <button className="btn" onClick={() => onEditDeck(faction)}>
           Edit deck
+        </button>
+        <button className="btn" onClick={onSettings}>
+          Settings
         </button>
       </div>
     </div>

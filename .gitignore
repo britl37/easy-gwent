@@ -1,7 +1,9 @@
 .git
 node_modules/
 dist/
-assets/cards/*.png
+assets/cards/*
+!assets/cards/.gitkeep
+!assets/README.md
 *.tsbuildinfo
 .vite/
 packages/server/data/

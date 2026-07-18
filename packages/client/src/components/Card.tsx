@@ -1,5 +1,5 @@
 import { byId } from '@gwent/data';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { placeholderArt } from '../assets/placeholder.ts';
 
 export interface CardProps {
@@ -13,12 +13,32 @@ export interface CardProps {
   size?: 'row' | 'hand' | 'big';
 }
 
+const EXTS = ['.webp', '.png', '.jpg'] as const;
+
 export function Card({ cardId, strength, selected, dimmed, onClick, onHover, size = 'row' }: CardProps) {
+  const [extIndex, setExtIndex] = useState(0);
   const [failed, setFailed] = useState(false);
+
+  useEffect(() => {
+    setExtIndex(0);
+    setFailed(false);
+  }, [cardId]);
+
   const def = byId(cardId);
-  const src = failed ? placeholderArt(cardId) : `/assets/cards/${cardId}.png`;
+  const forcePlaceholder =
+    typeof document !== 'undefined' && document.documentElement.classList.contains('no-card-art');
+  const src =
+    forcePlaceholder || failed || extIndex >= EXTS.length
+      ? placeholderArt(cardId)
+      : `/assets/cards/${cardId}${EXTS[extIndex]}`;
+
   const shown = strength ?? def.strength;
   const boosted = def.type === 'unit' && shown !== undefined && def.strength !== undefined && shown !== def.strength;
+
+  const onImgError = () => {
+    if (extIndex + 1 < EXTS.length) setExtIndex((i) => i + 1);
+    else setFailed(true);
+  };
 
   return (
     <div
@@ -35,7 +55,12 @@ export function Card({ cardId, strength, selected, dimmed, onClick, onHover, siz
       onMouseEnter={() => onHover?.(cardId)}
       onMouseLeave={() => onHover?.(null)}
     >
-      <img src={src} alt={def.name} draggable={false} onError={() => setFailed(true)} />
+      <img
+        src={src}
+        alt={def.name}
+        draggable={false}
+        onError={forcePlaceholder ? undefined : onImgError}
+      />
       {def.type === 'unit' && shown !== undefined && (
         <span className={`card-strength ${boosted ? (shown > (def.strength ?? 0) ? 'buffed' : 'debuffed') : ''}`}>
           {shown}

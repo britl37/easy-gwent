@@ -12,7 +12,8 @@
     "build": "npm run build --workspaces --if-present",
     "start": "npm run start -w @gwent/server",
     "test": "vitest run",
-    "fetch-assets": "node --experimental-strip-types scripts/fetch-assets.ts"
+    "build-manifest": "tsx scripts/build-asset-manifest.ts",
+    "fetch-assets": "tsx scripts/fetch-assets.ts"
   },
   "devDependencies": {
     "tsx": "^4.23.1",

@@ -10,6 +10,7 @@ import { LeaderboardScreen } from './screens/Leaderboard.tsx';
 import { LobbyScreen, type MultiplayerSession } from './screens/Lobby.tsx';
 import { MenuScreen } from './screens/Menu.tsx';
 import { MultiplayerGameScreen } from './screens/MultiplayerGame.tsx';
+import { SettingsScreen } from './screens/Settings.tsx';
 
 type Screen =
   | { name: 'menu' }
@@ -18,7 +19,8 @@ type Screen =
   | { name: 'auth'; next: 'lobby' | 'menu' }
   | { name: 'lobby' }
   | { name: 'mp'; session: MultiplayerSession }
-  | { name: 'leaderboard' };
+  | { name: 'leaderboard' }
+  | { name: 'settings' };
 
 export function App() {
   const [screen, setScreen] = useState<Screen>({ name: 'menu' });
@@ -95,6 +97,9 @@ export function App() {
   if (screen.name === 'leaderboard') {
     return <LeaderboardScreen onBack={() => setScreen({ name: 'menu' })} />;
   }
+  if (screen.name === 'settings') {
+    return <SettingsScreen onBack={() => setScreen({ name: 'menu' })} />;
+  }
 
   return (
     <MenuScreen
@@ -105,6 +110,7 @@ export function App() {
       onEditDeck={(faction) => setScreen({ name: 'deck', faction })}
       onMultiplayer={goMultiplayer}
       onLeaderboard={() => setScreen({ name: 'leaderboard' })}
+      onSettings={() => setScreen({ name: 'settings' })}
       onAccount={() => setScreen({ name: 'auth', next: 'menu' })}
       onLogout={() => void logout()}
     />

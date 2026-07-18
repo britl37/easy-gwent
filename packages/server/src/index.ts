@@ -22,6 +22,9 @@ const HOST = process.env.HOST ?? '0.0.0.0';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const STATIC_DIR =
   process.env.STATIC_DIR ?? path.resolve(__dirname, '../../client/dist');
+/** Downloaded card art (repo root assets/). */
+const ASSETS_DIR =
+  process.env.ASSETS_DIR ?? path.resolve(__dirname, '../../../assets');
 const DB_PATH =
   process.env.GWENT_DB ?? path.resolve(__dirname, '../data/gwent.sqlite');
 
@@ -344,9 +347,13 @@ const MIME: Record<string, string> = {
   '.css': 'text/css; charset=utf-8',
   '.json': 'application/json',
   '.png': 'image/png',
+  '.jpg': 'image/jpeg',
+  '.jpeg': 'image/jpeg',
+  '.webp': 'image/webp',
   '.svg': 'image/svg+xml',
   '.ico': 'image/x-icon',
   '.woff2': 'font/woff2',
+  '.md': 'text/markdown; charset=utf-8',
 };
 
 function json(res: http.ServerResponse, status: number, body: unknown): void {
@@ -470,7 +477,35 @@ async function handleApi(req: http.IncomingMessage, res: http.ServerResponse, ur
   }
 }
 
+function trySendFile(filePath: string, res: http.ServerResponse, cache = false): boolean {
+  if (!fs.existsSync(filePath) || fs.statSync(filePath).isDirectory()) return false;
+  const ext = path.extname(filePath).toLowerCase();
+  const headers: Record<string, string> = {
+    'content-type': MIME[ext] ?? 'application/octet-stream',
+  };
+  if (cache) headers['cache-control'] = 'public, max-age=86400';
+  res.writeHead(200, headers);
+  fs.createReadStream(filePath).pipe(res);
+  return true;
+}
+
 function serveStatic(req: http.IncomingMessage, res: http.ServerResponse): void {
+  const url = new URL(req.url ?? '/', `http://${req.headers.host ?? 'localhost'}`);
+  let rel = decodeURIComponent(url.pathname);
+
+  // Card art and other repo assets (gitignored downloads).
+  if (rel === '/assets' || rel.startsWith('/assets/')) {
+    const assetRel = rel === '/assets' ? '' : rel.slice('/assets/'.length);
+    const filePath = path.normalize(path.join(ASSETS_DIR, assetRel));
+    if (!filePath.startsWith(ASSETS_DIR)) {
+      res.writeHead(403).end('Forbidden');
+      return;
+    }
+    if (trySendFile(filePath, res, true)) return;
+    res.writeHead(404).end('Not found');
+    return;
+  }
+
   if (!fs.existsSync(STATIC_DIR)) {
     res.writeHead(200, { 'content-type': 'text/plain; charset=utf-8' });
     res.end(
@@ -481,8 +516,6 @@ function serveStatic(req: http.IncomingMessage, res: http.ServerResponse): void 
     return;
   }
 
-  const url = new URL(req.url ?? '/', `http://${req.headers.host ?? 'localhost'}`);
-  let rel = decodeURIComponent(url.pathname);
   if (rel === '/') rel = '/index.html';
   const filePath = path.normalize(path.join(STATIC_DIR, rel));
   if (!filePath.startsWith(STATIC_DIR)) {
@@ -490,16 +523,8 @@ function serveStatic(req: http.IncomingMessage, res: http.ServerResponse): void 
     return;
   }
 
-  const trySend = (p: string): boolean => {
-    if (!fs.existsSync(p) || fs.statSync(p).isDirectory()) return false;
-    const ext = path.extname(p);
-    res.writeHead(200, { 'content-type': MIME[ext] ?? 'application/octet-stream' });
-    fs.createReadStream(p).pipe(res);
-    return true;
-  };
-
-  if (trySend(filePath)) return;
-  if (trySend(path.join(STATIC_DIR, 'index.html'))) return;
+  if (trySendFile(filePath, res)) return;
+  if (trySendFile(path.join(STATIC_DIR, 'index.html'), res)) return;
   res.writeHead(404).end('Not found');
 }
 
@@ -536,5 +561,6 @@ wss.on('connection', (ws) => {
 server.listen(PORT, HOST, () => {
   console.log(`easy-gwent server listening on http://${HOST}:${PORT}`);
   console.log(`  static: ${fs.existsSync(STATIC_DIR) ? STATIC_DIR : '(none)'}`);
+  console.log(`  assets: ${fs.existsSync(ASSETS_DIR) ? ASSETS_DIR : '(none)'}`);
   console.log(`  db: ${DB_PATH}`);
 });

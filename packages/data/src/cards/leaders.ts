@@ -24,8 +24,8 @@ export const LEADER_CARDS: CardDef[] = [
   leader('monsters', 'mo_leader_red_riders', 'Eredin: Commander of the Red Riders', 'eredin_commander_of_red_riders'),
   leader('monsters', 'mo_leader_bringer_death', 'Eredin: Bringer of Death', 'eredin_bringer_of_death'),
   leader('monsters', 'mo_leader_destroyer', 'Eredin: Destroyer of Worlds', 'eredin_destroyer_of_worlds'),
-  leader('monsters', 'mo_leader_king_wild_hunt', 'Eredin Bréacc Glas: King of the Wild Hunt', 'eredin_king_of_the_wild_hunt'),
-  leader('monsters', 'mo_leader_treacherous', 'Eredin: The Treacherous', 'eredin_treacherous'),
+  leader('monsters', 'mo_leader_king_wild_hunt', 'Eredin: King of the Wild Hunt', 'eredin_king_of_the_wild_hunt'),
+  leader('monsters', 'mo_leader_treacherous', 'Eredin Bréacc Glas: The Treacherous', 'eredin_treacherous'),
   // ─ Skellige ─
   leader('skellige', 'sk_leader_crach', 'Crach an Craite', 'crach_an_craite'),
   leader('skellige', 'sk_leader_bran', 'King Bran', 'bran_tuirseach'),

@@ -96,6 +96,9 @@ export function applyLeader(s: GameState, rng: Rng, player: PlayerId, ability: L
       break;
     // ─ Monsters ─
     case 'eredin_commander_of_red_riders':
+      // Double the strength of all your Close Combat units (unless a horn is already on that row)
+      hornRow(s, player, 'melee');
+      break;
     case 'eredin_king_of_the_wild_hunt':
       weatherFromDeck(s, player, ['frost', 'fog', 'rain', 'storm']);
       break;

@@ -72,6 +72,35 @@ describe('Rooms', () => {
     }
   });
 
+  it('allows both players to redraw independently and starts play when both finish', () => {
+    const rooms = new Rooms(() => 7);
+    const a = rooms.create(testDeck('northern_realms'));
+    if (!a.ok) throw new Error('create failed');
+    const j = rooms.join(a.value.id, testDeck('nilfgaard'));
+    if (!j.ok || !j.value.state) throw new Error('join failed');
+
+    // Joiner (seat 1) acts first, before the host has redrawn anything.
+    const swap = rooms.act(a.value.id, 1, { type: 'REDRAW', player: 1, handIndex: 0 });
+    expect(swap.ok).toBe(true);
+    const keep1 = rooms.act(a.value.id, 1, { type: 'REDRAW', player: 1, handIndex: null });
+    expect(keep1.ok).toBe(true);
+    if (!keep1.ok) return;
+    expect(keep1.value.phase).toBe('redraw'); // host still deciding
+
+    // Seat 1 is done — further redraws from them are rejected.
+    const extra = rooms.act(a.value.id, 1, { type: 'REDRAW', player: 1, handIndex: 0 });
+    expect(extra.ok).toBe(false);
+
+    // A spoofed player field is rejected.
+    const spoof = rooms.act(a.value.id, 0, { type: 'REDRAW', player: 1, handIndex: null });
+    expect(spoof.ok).toBe(false);
+    if (!spoof.ok) expect(spoof.code).toBe('illegal_action');
+
+    const keep0 = rooms.act(a.value.id, 0, { type: 'REDRAW', player: 0, handIndex: null });
+    expect(keep0.ok).toBe(true);
+    if (keep0.ok) expect(keep0.value.phase).toBe('play');
+  });
+
   it('reset starts a fresh game reusing both decks (rematch)', () => {
     let seed = 1;
     const rooms = new Rooms(() => seed++);

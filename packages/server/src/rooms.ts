@@ -66,7 +66,15 @@ export class Rooms {
   act(roomId: string, player: PlayerId, action: Action): RoomResult<GameState> {
     const room = this.rooms.get(roomId);
     if (!room || !room.state) return err('room_not_found', `No active game in room ${roomId}`);
-    if (currentActor(room.state) !== player) return err('not_your_turn', 'Not your turn');
+    if ('player' in action && action.player !== player) {
+      return err('illegal_action', 'Action player does not match seat');
+    }
+    // Redraw phase is simultaneous: either player may redraw/keep independently.
+    const freeRedraw =
+      room.state.phase === 'redraw' &&
+      action.type === 'REDRAW' &&
+      room.state.players[player].redrawsLeft > 0;
+    if (!freeRedraw && currentActor(room.state) !== player) return err('not_your_turn', 'Not your turn');
     try {
       room.state = applyAction(room.state, action);
       return { ok: true, value: room.state };

@@ -493,11 +493,12 @@ function serveStatic(req: http.IncomingMessage, res: http.ServerResponse): void 
   const url = new URL(req.url ?? '/', `http://${req.headers.host ?? 'localhost'}`);
   let rel = decodeURIComponent(url.pathname);
 
-  // Card art and other repo assets (gitignored downloads).
-  if (rel === '/assets' || rel.startsWith('/assets/')) {
-    const assetRel = rel === '/assets' ? '' : rel.slice('/assets/'.length);
+  // Card art only (gitignored downloads under assets/cards/).
+  // Do NOT claim all of /assets/* — Vite puts JS/CSS at /assets/index-*.js in dist.
+  if (rel.startsWith('/assets/cards/')) {
+    const assetRel = rel.slice('/assets/'.length); // "cards/..."
     const filePath = path.normalize(path.join(ASSETS_DIR, assetRel));
-    if (!filePath.startsWith(ASSETS_DIR)) {
+    if (!filePath.startsWith(path.join(ASSETS_DIR, 'cards'))) {
       res.writeHead(403).end('Forbidden');
       return;
     }

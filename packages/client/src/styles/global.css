@@ -548,6 +548,14 @@ body::after {
 }
 .deck-stats { font-size: 12px; color: #cbbf9a; font-weight: normal; margin-left: 8px; }
 .deck-errors { color: #e06c5a; font-size: 13px; margin: 4px 0; padding-left: 18px; }
+.deck-invalid-note { color: #e0b25a; font-size: 13px; margin: 6px 0 2px; }
+.save-status {
+  margin-left: auto; padding: 6px 14px; border-radius: 6px;
+  font-family: 'Cinzel', serif; font-size: 13px; letter-spacing: 0.05em;
+  border: 1px solid;
+}
+.save-status.save-ok { color: #9ac97a; border-color: #9ac97a55; background: #9ac97a11; }
+.save-status.save-bad { color: #e0b25a; border-color: #e0b25a66; background: #e0b25a14; cursor: help; }
 .ed-list { list-style: none; margin: 0; padding: 0; }
 .ed-row {
   display: flex; align-items: center; gap: 8px; padding: 3px 6px;

@@ -1,6 +1,6 @@
 import { ALL_CARDS, LEADER_CARDS, byId, type CardDef, type PlayableFaction } from '@gwent/data';
 import { MAX_SPECIALS, MIN_UNITS, validateDeck, type DeckList } from '@gwent/engine';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { loadDeckDraft, saveDeck } from '../game/decks.ts';
 
 const FACTION_NAMES: Record<PlayableFaction, string> = {
@@ -40,20 +40,25 @@ export function DeckEditorScreen({
 }) {
   const [faction, setFaction] = useState<PlayableFaction>(initialFaction);
   const [deck, setDeck] = useState<DeckList>(() => loadDeckDraft(initialFaction));
-  const [savedFlash, setSavedFlash] = useState(false);
+
+  // Auto-save every edit. Games validate on load and fall back to the starter
+  // deck, so persisting an in-progress (invalid) draft is safe.
+  useEffect(() => {
+    saveDeck(deck);
+  }, [deck]);
 
   const switchFaction = (f: PlayableFaction) => {
     setFaction(f);
     setDeck(loadDeckDraft(f));
-    setSavedFlash(false);
   };
 
   // Card pool for this faction (faction cards + neutrals), sorted.
+  // count < 1 marks summon-only tokens that can never be deck-built.
   const pool = useMemo(
     () =>
-      ALL_CARDS.filter((c) => c.type !== 'leader' && (c.faction === faction || c.faction === 'neutral')).sort(
-        sortCards,
-      ),
+      ALL_CARDS.filter(
+        (c) => c.type !== 'leader' && c.count > 0 && (c.faction === faction || c.faction === 'neutral'),
+      ).sort(sortCards),
     [faction],
   );
   const leaders = useMemo(() => LEADER_CARDS.filter((l) => l.faction === faction), [faction]);
@@ -68,7 +73,6 @@ export function DeckEditorScreen({
     const c = byId(id);
     if ((inDeck.get(id) ?? 0) >= c.count) return;
     setDeck((d) => ({ ...d, cards: [...d.cards, id] }));
-    setSavedFlash(false);
   };
   const remove = (id: string) => {
     setDeck((d) => {
@@ -78,7 +82,6 @@ export function DeckEditorScreen({
       cards.splice(i, 1);
       return { ...d, cards };
     });
-    setSavedFlash(false);
   };
 
   // Stats + validation.
@@ -127,17 +130,12 @@ export function DeckEditorScreen({
             </button>
           ))}
         </div>
-        <button
-          className="btn btn-primary"
-          disabled={!valid}
-          title={valid ? 'Save deck' : errors.map((e) => e.message).join('\n')}
-          onClick={() => {
-            saveDeck(deck);
-            setSavedFlash(true);
-          }}
+        <div
+          className={`save-status ${valid ? 'save-ok' : 'save-bad'}`}
+          title={valid ? 'Deck is valid and saved' : errors.map((e) => e.message).join('\n')}
         >
-          {savedFlash ? 'Saved ✓' : 'Save deck'}
-        </button>
+          {valid ? 'Saved ✓' : '⚠ Invalid deck'}
+        </div>
       </div>
 
       <div className="editor-columns">
@@ -146,10 +144,10 @@ export function DeckEditorScreen({
           <ul className="ed-list">
             {pool.map((c) => {
               const used = inDeck.get(c.id) ?? 0;
-              const left = c.count - used;
+              const left = Math.max(0, c.count - used);
               return (
-                <li key={c.id} className={`ed-row ${left === 0 ? 'ed-row-dim' : ''}`}>
-                  <button className="ed-add" disabled={left === 0} onClick={() => add(c.id)}>
+                <li key={c.id} className={`ed-row ${left <= 0 ? 'ed-row-dim' : ''}`}>
+                  <button className="ed-add" disabled={left <= 0} onClick={() => add(c.id)}>
                     +
                   </button>
                   <span className="ed-name">{c.name}</span>
@@ -184,16 +182,21 @@ export function DeckEditorScreen({
 
           <h3>
             Deck <span className="deck-stats">
-              units {stats.units}/{MIN_UNITS}+ · specials {stats.specials}/{MAX_SPECIALS} · heroes{' '}
+              units {stats.units} (min {MIN_UNITS}, no max) · specials {stats.specials}/{MAX_SPECIALS} · heroes{' '}
               {stats.heroes} · str {stats.strength}
             </span>
           </h3>
           {errors.length > 0 && (
-            <ul className="deck-errors">
-              {errors.map((e, i) => (
-                <li key={i}>{e.message}</li>
-              ))}
-            </ul>
+            <>
+              <p className="deck-invalid-note">
+                Changes are saved, but games will use the starter deck until these are fixed:
+              </p>
+              <ul className="deck-errors">
+                {errors.map((e, i) => (
+                  <li key={i}>{e.message}</li>
+                ))}
+              </ul>
+            </>
           )}
           <ul className="ed-list">
             {deckRows.map(({ card: c, n }) => (

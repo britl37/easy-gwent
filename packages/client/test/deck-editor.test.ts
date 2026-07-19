@@ -62,4 +62,31 @@ describe('deck editor card descriptions', () => {
     expect(matches).toContain('ne_gaunter_odimm');
     expect(matches).toContain('ne_gaunter_darkness');
   });
+
+  it.each(['melee', 'ranged', 'siege'] as const)('filters units that can play in the %s row', (row) => {
+    const collection = collectionCardsForFaction('scoiatael');
+    const expected = collection.filter((card) => card.type === 'unit' && card.rows?.includes(row));
+    const filtered = filterCollection(collection, row, '');
+
+    expect(new Set(filtered.map((card) => card.id))).toEqual(new Set(expected.map((card) => card.id)));
+    expect(filtered.length).toBeGreaterThan(0);
+  });
+
+  it('includes agile units in each row filter they can occupy', () => {
+    const collection = collectionCardsForFaction('scoiatael');
+    const agile = collection.find((card) => card.type === 'unit' && card.rows?.length === 2);
+
+    expect(agile).toBeDefined();
+    for (const row of agile!.rows ?? []) {
+      expect(filterCollection(collection, row, '').map((card) => card.id)).toContain(agile!.id);
+    }
+  });
+
+  it('filters hero units independently of their combat row', () => {
+    const collection = collectionCardsForFaction('northern_realms');
+    const filtered = filterCollection(collection, 'heroes', '');
+
+    expect(filtered.length).toBeGreaterThan(0);
+    expect(filtered.every((card) => card.type === 'unit' && card.hero)).toBe(true);
+  });
 });

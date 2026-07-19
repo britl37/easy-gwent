@@ -25,12 +25,17 @@ const ROW_NAMES: Record<Row, string> = {
   ranged: 'Ranged',
   siege: 'Siege',
 };
+const UNIT_ROWS: Row[] = ['melee', 'ranged', 'siege'];
 
-export type PoolFilter = 'all' | 'units' | 'specials' | 'effects';
+export type PoolFilter = 'all' | 'units' | Row | 'heroes' | 'specials' | 'effects';
 
 const FILTERS: Array<{ id: PoolFilter; label: string }> = [
   { id: 'all', label: 'All cards' },
   { id: 'units', label: 'Units' },
+  { id: 'melee', label: 'Melee' },
+  { id: 'ranged', label: 'Ranged' },
+  { id: 'siege', label: 'Siege' },
+  { id: 'heroes', label: 'Heroes' },
   { id: 'specials', label: 'Specials' },
   { id: 'effects', label: 'With effects' },
 ];
@@ -121,9 +126,12 @@ function nearWord(query: string, candidate: string): boolean {
 export function filterCollection(cards: CardDef[], filter: PoolFilter, query: string): CardDef[] {
   const normalizedQuery = normalizeSearch(query);
   const queryWords = normalizedQuery.split(' ').filter(Boolean);
+  const rowFilter = UNIT_ROWS.find((row) => row === filter);
 
   return cards.filter((card) => {
     if (filter === 'units' && card.type !== 'unit') return false;
+    if (filter === 'heroes' && (card.type !== 'unit' || !card.hero)) return false;
+    if (rowFilter && (card.type !== 'unit' || !card.rows?.includes(rowFilter))) return false;
     if (filter === 'specials' && card.type !== 'special') return false;
     if (filter === 'effects' && !hasCardEffect(card)) return false;
     if (!normalizedQuery) return true;

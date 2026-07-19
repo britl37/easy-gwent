@@ -40,7 +40,7 @@ Owner review fixes and editor rework:
   to a sustained brass-like finish. Draws and losses retain the subdued
   round-end cue and match wins retain the full victory fanfare.
 - Rebuilt the deck editor around card artwork and readable rules text. It now
-  includes name/effect search, unit/special/effect filters, card metadata,
+  includes name/effect search, unit-row/hero/special/effect filters, card metadata,
   copy availability, visual leader selection, deck steppers, validation and
   statistics, and summon-only references. On phones, Collection and My Deck
   are separate full-height tabs with independent scrolling, keeping search,
@@ -49,7 +49,7 @@ Owner review fixes and editor rework:
   prove every legal faction/neutral card appears and can be found by name.
 - Added client regression coverage for pass detection and editor effect-text
   classification.
-- Verification: 106/106 tests passed, TypeScript passed, production build passed,
+- Verification: 111/111 tests passed, TypeScript passed, production build passed,
   and the local and public servers returned the new hashed bundle.
 
 The project owner has begun live browser review and reported/fixed the issues

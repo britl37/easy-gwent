@@ -17,8 +17,9 @@ online multiplayer with accounts + leaderboard.
 
 ## Current interface
 
-- Artwork-first deck editor with card rules text, name/effect search, filters,
-  visual leader selection, deck validation, and a tabbed mobile workspace.
+- Artwork-first deck editor with card rules text, name/effect search, unit-row,
+  hero, special, and effect filters, visual leader selection, deck validation,
+  and a tabbed mobile workspace.
 - Local games against easy, medium, or hard AI.
 - Online rooms with reconnect/resume, rematches, accounts, stats, and a
   leaderboard.

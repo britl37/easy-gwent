@@ -1,5 +1,5 @@
 import { chooseEasy, chooseHard, chooseMedium, type Difficulty } from '@gwent/ai';
-import { ALL_CARDS, LEADER_CARDS, type PlayableFaction } from '@gwent/data';
+import { type PlayableFaction } from '@gwent/data';
 import {
   applyAction,
   createGame,
@@ -14,18 +14,8 @@ import {
 export const HUMAN: PlayerId = 0;
 export const AI: PlayerId = 1;
 
-/** Build a legal starter deck for a faction: first leader + up to 25 unit copies. */
-export function starterDeck(faction: PlayableFaction): DeckList {
-  const leader = LEADER_CARDS.find((l) => l.faction === faction)!;
-  const cards: string[] = [];
-  for (const c of ALL_CARDS) {
-    if (c.type !== 'unit') continue;
-    if (c.faction !== faction && c.faction !== 'neutral') continue;
-    for (let i = 0; i < c.count && cards.length < 25; i++) cards.push(c.id);
-    if (cards.length >= 25) break;
-  }
-  return { faction, leaderId: leader.id, cards };
-}
+// Rule-driven starter decks live in the engine; re-exported for existing callers.
+export { starterDeck } from '@gwent/engine';
 
 /** Whose action does the engine expect next? */
 export function currentActor(s: GameState): PlayerId {

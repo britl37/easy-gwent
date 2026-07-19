@@ -168,10 +168,7 @@ export function DeckEditorScreen({
               <li key={l.id} className="ed-row">
                 <button
                   className={`ed-add ${deck.leaderId === l.id ? 'btn-selected' : ''}`}
-                  onClick={() => {
-                    setDeck((d) => ({ ...d, leaderId: l.id }));
-                    setSavedFlash(false);
-                  }}
+                  onClick={() => setDeck((d) => ({ ...d, leaderId: l.id }))}
                 >
                   {deck.leaderId === l.id ? '✓' : ' '}
                 </button>

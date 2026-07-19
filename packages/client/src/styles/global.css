@@ -641,6 +641,7 @@ body::after {
 }
 .deck-validation strong { color: #e0b25a; }
 .deck-validation span + span::before { content: '•'; margin-right: 8px; color: #8a6d3b; }
+.mobile-editor-tabs { display: none; }
 .editor-workspace {
   display: grid;
   grid-template-columns: minmax(0, 1.65fr) minmax(360px, 0.85fr);
@@ -919,32 +920,113 @@ body::after {
   /* Carousel picker fits the screen */
   .carousel { max-width: 96vw; }
   .carousel-cards { gap: 8px; padding: 8px; }
-  /* Deck editor: one readable scrolling column */
-  .deck-editor { height: 100dvh; padding: 8px; overflow-y: auto; }
-  .editor-title-row { flex-wrap: wrap; }
-  .editor-title-row .save-status { order: 3; }
-  .editor-factions { margin: 0 -2px; }
-  .editor-factions .btn { min-height: 34px; }
+  /* Deck editor: fixed phone workspace with collection/deck tabs */
+  .deck-editor {
+    height: 100dvh;
+    padding: calc(6px + env(safe-area-inset-top)) 7px calc(6px + env(safe-area-inset-bottom));
+    gap: 7px;
+    overflow: hidden;
+  }
+  .editor-header { flex: 0 0 auto; gap: 4px; }
+  .editor-title-row { flex-wrap: nowrap; gap: 8px; }
+  .editor-title-row h1 { font-size: 20px; white-space: nowrap; }
+  .editor-title-row .btn { min-height: 34px; padding: 5px 9px; font-size: 11px; }
+  .editor-title-row .save-status {
+    max-width: 112px;
+    margin-left: auto;
+    padding: 4px 7px;
+    overflow: hidden;
+    font-size: 9px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .editor-kicker { font-size: 8px; }
+  .editor-factions { margin: 0 -2px; padding: 1px 2px 3px; gap: 4px; }
+  .editor-factions .btn { min-height: 31px; padding: 5px 9px; font-size: 10px; }
   .deck-overview {
+    flex: 0 0 auto;
     grid-auto-flow: column;
-    grid-auto-columns: minmax(135px, 1fr);
+    grid-auto-columns: minmax(116px, 1fr);
     grid-template-columns: none;
     overflow-x: auto;
   }
+  .deck-overview > div { padding: 5px 8px; }
   .deck-overview > div { border-right: 1px solid #ffffff10; }
-  .deck-validation { align-items: flex-start; flex-direction: column; white-space: normal; }
+  .deck-overview span { font-size: 10px; }
+  .deck-overview strong { font-size: 18px; }
+  .deck-overview small { font-size: 8px; }
+  .deck-validation {
+    align-items: flex-start;
+    flex: 0 0 auto;
+    flex-direction: column;
+    max-height: 58px;
+    padding: 5px 8px;
+    gap: 2px;
+    overflow-y: auto;
+    font-size: 10px;
+    white-space: normal;
+  }
   .deck-validation span + span::before { display: none; }
-  .editor-workspace { display: flex; flex: 0 0 auto; flex-direction: column; }
-  .collection-panel, .deck-panel { overflow: visible; }
-  .collection-scroll, .deck-list-scroll { overflow: visible; }
-  .collection-toolbar { align-items: stretch; flex-direction: column; }
+  .mobile-editor-tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    flex: 0 0 auto;
+    padding: 3px;
+    border: 1px solid #6b5a36;
+    border-radius: 8px;
+    background: #0d0907;
+    box-shadow: inset 0 1px 0 #ffffff0a;
+  }
+  .mobile-editor-tabs button {
+    min-height: 36px;
+    border: 0;
+    border-radius: 5px;
+    background: transparent;
+    color: #94886f;
+    font: 12px var(--font-display);
+    letter-spacing: 0.04em;
+  }
+  .mobile-editor-tabs button.active {
+    background: linear-gradient(180deg, #3a2b16, #24190e);
+    color: var(--gold-bright);
+    box-shadow: inset 0 0 0 1px #8a6d3b;
+  }
+  .mobile-editor-tabs button span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 22px;
+    margin-left: 4px;
+    padding: 2px 5px;
+    border-radius: 999px;
+    background: #ffffff0d;
+    font-size: 9px;
+  }
+  .editor-workspace { display: block; flex: 1; min-height: 0; }
+  .collection-panel, .deck-panel { display: none; height: 100%; min-height: 0; overflow: hidden; }
+  .collection-panel.mobile-pane-active, .deck-panel.mobile-pane-active { display: flex; }
+  .collection-scroll, .deck-list-scroll {
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+  .editor-section-heading { padding: 8px 10px 6px; }
+  .editor-section-heading h2 { font-size: 16px; }
+  .compact-heading { padding: 7px 9px 5px; }
+  .collection-toolbar { align-items: stretch; flex-direction: column; gap: 6px; padding: 7px 9px; }
   .collection-search { min-width: 0; }
+  .collection-search input { padding: 7px 9px; font-size: 13px; }
+  .collection-filters { padding-bottom: 1px; }
+  .collection-filters button { padding: 6px 8px; }
+  .collection-scroll { padding: 8px; }
   .collection-grid { grid-template-columns: 1fr; }
   .collection-card { min-height: 169px; }
   .collection-card-art .card-big { height: 148px; }
-  .leader-choice { flex-basis: 270px; }
-  .leader-choice-art .card-big { height: 100px; }
-  .built-deck-section { min-height: 300px; }
+  .leader-card-list { padding: 7px 8px 9px; }
+  .leader-choice { flex-basis: min(270px, calc(100vw - 38px)); }
+  .leader-choice-art .card-big { height: 92px; }
+  .built-deck-section { flex: 1; min-height: 0; }
+  .deck-list-scroll { padding: 7px 8px 10px; }
   /* Menu / lobby */
   .join-row { flex-wrap: wrap; justify-content: center; }
   .leaderboard-box { width: 96%; }

@@ -240,6 +240,7 @@ export function DeckEditorScreen({
   const [deck, setDeck] = useState<DeckList>(() => loadDeckDraft(initialFaction));
   const [query, setQuery] = useState('');
   const [poolFilter, setPoolFilter] = useState<PoolFilter>('all');
+  const [mobilePane, setMobilePane] = useState<'collection' | 'deck'>('collection');
 
   // Auto-save every edit. Games validate on load and fall back to the starter
   // deck, so persisting an in-progress (invalid) draft is safe.
@@ -252,6 +253,7 @@ export function DeckEditorScreen({
     setDeck(loadDeckDraft(nextFaction));
     setQuery('');
     setPoolFilter('all');
+    setMobilePane('collection');
   };
 
   // Card pool for this faction (faction cards + neutrals), sorted.
@@ -375,8 +377,34 @@ export function DeckEditorScreen({
         </div>
       )}
 
+      <nav className="mobile-editor-tabs" role="tablist" aria-label="Deck editor section">
+        <button
+          type="button"
+          role="tab"
+          aria-selected={mobilePane === 'collection'}
+          aria-controls="deck-editor-collection"
+          className={mobilePane === 'collection' ? 'active' : ''}
+          onClick={() => setMobilePane('collection')}
+        >
+          Collection <span>{filteredPool.length}</span>
+        </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={mobilePane === 'deck'}
+          aria-controls="deck-editor-deck"
+          className={mobilePane === 'deck' ? 'active' : ''}
+          onClick={() => setMobilePane('deck')}
+        >
+          My deck <span>{deck.cards.length}</span>
+        </button>
+      </nav>
+
       <main className="editor-workspace">
-        <section className="collection-panel">
+        <section
+          id="deck-editor-collection"
+          className={`collection-panel ${mobilePane === 'collection' ? 'mobile-pane-active' : ''}`}
+        >
           <div className="editor-section-heading">
             <div>
               <span className="editor-kicker">Browse and add</span>
@@ -444,7 +472,10 @@ export function DeckEditorScreen({
           </div>
         </section>
 
-        <aside className="deck-panel">
+        <aside
+          id="deck-editor-deck"
+          className={`deck-panel ${mobilePane === 'deck' ? 'mobile-pane-active' : ''}`}
+        >
           <section className="leader-section">
             <div className="editor-section-heading compact-heading">
               <div>

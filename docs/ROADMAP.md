@@ -34,12 +34,14 @@ Owner review fixes and editor rework:
 - Rebuilt the deck editor around card artwork and readable rules text. It now
   includes name/effect search, unit/special/effect filters, card metadata,
   copy availability, visual leader selection, deck steppers, validation and
-  statistics, summon-only references, and a responsive mobile layout. Search
-  tolerates a single typo/transposition, and exhaustive tests prove every legal
-  faction/neutral card appears and can be found by name.
+  statistics, and summon-only references. On phones, Collection and My Deck
+  are separate full-height tabs with independent scrolling, keeping search,
+  filters, leader selection, and deck controls usable without a page-length
+  stack. Search tolerates a single typo/transposition, and exhaustive tests
+  prove every legal faction/neutral card appears and can be found by name.
 - Added client regression coverage for pass detection and editor effect-text
   classification.
-- Verification: 96/96 tests passed, TypeScript passed, production build passed,
+- Verification: 103/103 tests passed, TypeScript passed, production build passed,
   and the local and public servers returned the new hashed bundle.
 
 The project owner has begun live browser review and reported/fixed the issues

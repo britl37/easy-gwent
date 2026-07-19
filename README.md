@@ -15,6 +15,16 @@ online multiplayer with accounts + leaderboard.
 | `@gwent/client` | React UI (Vite) |
 | `@gwent/server` | HTTP + WebSocket + SQLite (auth, rooms, stats) |
 
+## Current interface
+
+- Artwork-first deck editor with card rules text, name/effect search, filters,
+  visual leader selection, deck validation, and responsive mobile layout.
+- Local games against easy, medium, or hard AI.
+- Online rooms with reconnect/resume, rematches, accounts, stats, and a
+  leaderboard.
+- Turn/pass banners and synthesized sound effects, including distinct round
+  and match win cues. Sound and card art can be disabled in Settings.
+
 ## Card text vs card art
 
 | | In git? | Notes |
@@ -51,3 +61,12 @@ sudo systemctl restart easy-gwent
 ```
 
 App binds `127.0.0.1:8787`; Caddy terminates TLS for `easygwent.online`.
+
+## Documentation
+
+- [`docs/ROADMAP.md`](docs/ROADMAP.md): completed work and remaining release
+  verification.
+- [`docs/RUNBOOK.md`](docs/RUNBOOK.md): deployment, services, backup, restore,
+  and production verification procedures.
+- [`AGENTS.md`](AGENTS.md): repository conventions for contributors and coding
+  agents.

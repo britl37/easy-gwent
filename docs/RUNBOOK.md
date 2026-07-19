@@ -9,15 +9,21 @@ systemd service (Node server on `127.0.0.1:8787`, static client from
 ```sh
 cd ~/easy-gwent
 git pull                                   # if deploying from a fresh clone
-npx vitest run && npx tsc --noEmit         # 56 tests + typecheck must pass
-npm run build --workspace=@gwent/client    # vite build → packages/client/dist
+npm install
+npm test && npx tsc --noEmit               # full suite + typecheck must pass
+npm run build                              # fetch missing art + build client
 sudo systemctl restart easy-gwent
 curl -sf http://127.0.0.1:8787/ >/dev/null && echo OK
+curl -sf https://easygwent.online/ >/dev/null && echo LIVE
 ```
 
 Note: a restart drops live WS connections. Clients auto-reconnect within the
 grace window (`RECONNECT_GRACE_MS`), but avoid restarting during active games
 when possible.
+
+For client-only changes, a successful build replaces the static hashed bundle
+and is served immediately; a service restart is not required. Server, engine,
+environment, or dependency changes should use the full restart procedure.
 
 ## Services
 
@@ -65,3 +71,9 @@ Backups are integrity-checked (`PRAGMA integrity_check`) at creation time.
 
 Caddy manages certs automatically (`certbot.timer` is unrelated/system-level).
 Config: `/etc/caddy/Caddyfile`. Reload with `sudo systemctl reload caddy`.
+
+## Release verification
+
+After deploying, confirm that the local and public HTML reference the same
+hashed JS/CSS bundle, then hard-refresh a browser and exercise the changed UI.
+The full hands-on checklist is maintained in [`ROADMAP.md`](ROADMAP.md).

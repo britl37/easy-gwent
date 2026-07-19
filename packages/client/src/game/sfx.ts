@@ -92,6 +92,17 @@ export function sfxRoundEnd(): void {
   ]);
 }
 
+/** Four-beat rising sting — winning a round ("dun da da DAA"). */
+export function sfxRoundVictory(): void {
+  play([
+    { f: 196.0, at: 0, d: 0.16, g: 0.08, type: 'sine' },
+    { f: 293.66, at: 0.18, d: 0.13, g: 0.07 },
+    { f: 392.0, at: 0.34, d: 0.15, g: 0.075 },
+    { f: 523.25, at: 0.52, d: 0.55, g: 0.085 },
+    { f: 659.25, at: 0.52, d: 0.55, g: 0.045 },
+  ]);
+}
+
 /** Rising fanfare — you won the match. */
 export function sfxVictory(): void {
   play([

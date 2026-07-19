@@ -22,6 +22,13 @@ const ROW_LABEL: Record<string, string> = {
  * a "Your turn" toast. Pointer events pass through — never blocks input.
  */
 export function PlayReveal({ reveal, turnBanner, mine, opponentName }: PlayRevealProps) {
+  const bannerText =
+    turnBanner === 'you'
+      ? 'Your turn'
+      : turnBanner === 'opponent-passed'
+        ? `${opponentName} passed — Your turn`
+        : `${opponentName}'s turn`;
+
   return (
     <>
       {reveal && (
@@ -37,12 +44,12 @@ export function PlayReveal({ reveal, turnBanner, mine, opponentName }: PlayRevea
           </div>
         </div>
       )}
-      {turnBanner && !reveal && (
+      {turnBanner && (!reveal || turnBanner === 'opponent-passed') && (
         <div
-          className={`turn-banner ${turnBanner === 'you' ? 'turn-banner-you' : 'turn-banner-opp'}`}
+          className={`turn-banner ${turnBanner === 'opponent' ? 'turn-banner-opp' : ''} ${turnBanner === 'opponent-passed' ? 'turn-banner-pass' : ''}`}
           aria-live="polite"
         >
-          {turnBanner === 'you' ? 'Your turn' : `${opponentName}'s turn`}
+          {bannerText}
         </div>
       )}
     </>

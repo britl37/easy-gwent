@@ -6,6 +6,7 @@ import {
   sfxDefeat,
   sfxOpponentTurn,
   sfxRoundEnd,
+  sfxRoundVictory,
   sfxVictory,
   sfxYourTurn,
 } from './sfx';
@@ -22,7 +23,24 @@ export const REVEAL_MS = 900;
 export const TURN_TOAST_MS = 1400;
 
 /** Whose turn is being announced. */
-export type TurnBanner = 'you' | 'opponent';
+export type TurnBanner = 'you' | 'opponent' | 'opponent-passed';
+
+/**
+ * Passes need explicit feedback: a server snapshot can move directly from the
+ * opponent's action to our turn without a card reveal to make the handoff clear.
+ */
+export function didOpponentPass(prev: GameState, state: GameState, me: PlayerId): boolean {
+  const other = (1 - me) as PlayerId;
+  return (
+    prev.phase === 'play' &&
+    state.phase === 'play' &&
+    !prev.players[other].passed &&
+    state.players[other].passed &&
+    !state.players[me].passed &&
+    state.turn === me &&
+    state.roundHistory.length === prev.roundHistory.length
+  );
+}
 
 export interface RevealEvent {
   key: number;
@@ -89,9 +107,11 @@ export function usePlayReveals(state: GameState | null, me: PlayerId) {
           : state.turn === other && !state.players[other].passed
             ? 'opponent'
             : null;
-    if (whose && whose !== prevWhoseRef.current && prev) {
-      setTurnBanner(whose);
-      if (whose === 'you') sfxYourTurn();
+    const opponentPassed = prev ? didOpponentPass(prev, state, me) : false;
+    const nextBanner = opponentPassed ? 'opponent-passed' : whose !== prevWhoseRef.current ? whose : null;
+    if (nextBanner && prev) {
+      setTurnBanner(nextBanner);
+      if (nextBanner === 'you' || nextBanner === 'opponent-passed') sfxYourTurn();
       else sfxOpponentTurn();
       if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
       toastTimerRef.current = setTimeout(() => setTurnBanner(null), TURN_TOAST_MS);
@@ -104,7 +124,9 @@ export function usePlayReveals(state: GameState | null, me: PlayerId) {
         if (state.winner === me) sfxVictory();
         else sfxDefeat();
       } else if (state.roundHistory.length > prev.roundHistory.length) {
-        sfxRoundEnd();
+        const result = state.roundHistory.at(-1);
+        if (result?.winner === me) sfxRoundVictory();
+        else sfxRoundEnd();
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

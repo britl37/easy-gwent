@@ -18,6 +18,11 @@ interface ImageInfo {
   url: string;
 }
 
+/** Wiki filenames that cannot be derived reliably from the displayed card name. */
+const FILE_TITLE_OVERRIDES: Partial<Record<string, string>> = {
+  ne_gaunter_odimm: 'File:Tw3 gwent card face Gaunt ODimm.png',
+};
+
 async function api(params: Record<string, string>): Promise<unknown> {
   const q = new URLSearchParams({ format: 'json', ...params });
   const res = await fetch(`${API}?${q}`, { headers: { 'user-agent': UA } });
@@ -112,7 +117,10 @@ async function searchFace(query: string): Promise<string | null> {
   return null;
 }
 
-async function resolveCard(name: string): Promise<string | null> {
+async function resolveCard(id: string, name: string): Promise<string | null> {
+  const override = FILE_TITLE_OVERRIDES[id];
+  if (override) return imageUrlForTitle(override);
+
   const cands = nameCandidates(name);
   for (const cand of cands) {
     const title = `File:Tw3 gwent card face ${cand}.png`;
@@ -152,7 +160,7 @@ async function main() {
     }
     process.stdout.write(`[${i + 1}/${ALL_CARDS.length}] ${card.id} (${card.name})… `);
     try {
-      const url = await resolveCard(card.name);
+      const url = await resolveCard(card.id, card.name);
       if (url) {
         manifest[card.id] = url;
         ok++;

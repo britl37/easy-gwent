@@ -38,9 +38,13 @@ npm run build:code       # packages only (skip image download)
 npm run fetch-assets     # images only
 npm run build-manifest   # rare: regenerate image URL map
 npm run build-card-text  # rare: refresh text JSON from wiki, then commit it
+npm run refresh-wiki-cache # refresh gitignored TW3 Gwent wiki references
 ```
 
 Missing images → SVG placeholders. Missing text → engine-generated ability rules.
+Raw Witcher 3 Gwent wiki revisions are cached locally under
+`.wiki-cache/witcher3-gwent/`; `index.json` records their source URLs and exact
+revision IDs. The cache is intentionally not committed.
 
 ## Develop
 

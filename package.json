@@ -16,6 +16,7 @@
     "test": "vitest run",
     "build-manifest": "tsx scripts/build-asset-manifest.ts",
     "build-card-text": "tsx scripts/build-card-text.ts",
+    "refresh-wiki-cache": "tsx scripts/fetch-wiki-reference.ts",
     "fetch-assets": "tsx scripts/fetch-assets.ts"
   },
   "devDependencies": {

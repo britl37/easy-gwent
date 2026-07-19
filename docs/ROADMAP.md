@@ -28,9 +28,10 @@ Owner review fixes and editor rework:
 - Added explicit opponent-pass feedback: a prominent “Opponent passed — Your
   turn” banner and the normal your-turn chime, including when a card reveal is
   still fading out.
-- Added a distinct four-beat rising sound for winning a non-final round; draws
-  and losses retain the subdued round-end cue and match wins retain the full
-  victory fanfare.
+- Added a distinct four-note heroic reveal sting for winning a non-final round:
+  the second note falls a fifth below the opening, then two notes leap upward
+  to a sustained brass-like finish. Draws and losses retain the subdued
+  round-end cue and match wins retain the full victory fanfare.
 - Rebuilt the deck editor around card artwork and readable rules text. It now
   includes name/effect search, unit/special/effect filters, card metadata,
   copy availability, visual leader selection, deck steppers, validation and

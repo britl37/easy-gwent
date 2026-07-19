@@ -40,6 +40,8 @@ interface Note {
   /** Peak gain (0..1). */
   g?: number;
   type?: OscillatorType;
+  /** Portion of peak gain held until the final release (0..1). */
+  sustain?: number;
 }
 
 function play(notes: Note[]): void {
@@ -56,6 +58,9 @@ function play(notes: Note[]): void {
     const peak = n.g ?? 0.08;
     gain.gain.setValueAtTime(0.0001, t0);
     gain.gain.exponentialRampToValueAtTime(peak, t0 + 0.015);
+    if (n.sustain !== undefined) {
+      gain.gain.exponentialRampToValueAtTime(peak * n.sustain, t0 + n.d * 0.82);
+    }
     gain.gain.exponentialRampToValueAtTime(0.0001, t0 + n.d);
     osc.connect(gain).connect(ac.destination);
     osc.start(t0);
@@ -92,14 +97,23 @@ export function sfxRoundEnd(): void {
   ]);
 }
 
-/** Four-beat rising sting — winning a round ("dun da da DAA"). */
+/**
+ * Old-serial heroic reveal: opening note, a fifth down, then two upward leaps.
+ * Sawtooth fundamentals and quieter octave harmonics give it a compact brass
+ * character; the last note holds before releasing.
+ */
 export function sfxRoundVictory(): void {
   play([
-    { f: 196.0, at: 0, d: 0.16, g: 0.08, type: 'sine' },
-    { f: 293.66, at: 0.18, d: 0.13, g: 0.07 },
-    { f: 392.0, at: 0.34, d: 0.15, g: 0.075 },
-    { f: 523.25, at: 0.52, d: 0.55, g: 0.085 },
-    { f: 659.25, at: 0.52, d: 0.55, g: 0.045 },
+    // G3, then C3: a perfect fifth down.
+    { f: 196.0, at: 0, d: 0.16, g: 0.042, type: 'sawtooth' },
+    { f: 392.0, at: 0, d: 0.16, g: 0.015, type: 'triangle' },
+    { f: 130.81, at: 0.18, d: 0.16, g: 0.045, type: 'sawtooth' },
+    { f: 261.63, at: 0.18, d: 0.16, g: 0.016, type: 'triangle' },
+    // C4 rises above the opening; G4 makes the final, sustained leap.
+    { f: 261.63, at: 0.37, d: 0.18, g: 0.048, type: 'sawtooth' },
+    { f: 523.25, at: 0.37, d: 0.18, g: 0.017, type: 'triangle' },
+    { f: 392.0, at: 0.57, d: 0.82, g: 0.052, type: 'sawtooth', sustain: 0.72 },
+    { f: 783.99, at: 0.57, d: 0.82, g: 0.019, type: 'triangle', sustain: 0.68 },
   ]);
 }
 

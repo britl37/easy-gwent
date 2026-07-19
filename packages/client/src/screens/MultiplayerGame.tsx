@@ -13,6 +13,7 @@ import { CarouselPicker } from '../components/CarouselPicker.tsx';
 import { Hand } from '../components/Hand.tsx';
 import { PlayReveal } from '../components/PlayReveal.tsx';
 import { LogPanel, StatusColumn } from '../components/SidePanel.tsx';
+import { immediateHandPlay } from '../game/handInput.ts';
 import { STEP_MS, usePlayReveals } from '../game/reveal.ts';
 import { clearActiveRoom, saveActiveRoom } from '../net/activeRoom.ts';
 import { getToken } from '../net/auth.ts';
@@ -188,6 +189,13 @@ export function MultiplayerGameScreen({
     setSelected(i);
   };
 
+  const onHandDoubleClick = (i: number) => {
+    if (!myMove) return;
+    const action = immediateHandPlay(legal, i);
+    if (action) dispatch(action);
+    else setSelected(i);
+  };
+
   const multiRow =
     selectedPlays.length > 1 && selectedPlays.every((p) => p.row && !p.targetInstanceId);
   const decoyTargets = selectedPlays.some((p) => p.targetInstanceId);
@@ -206,7 +214,7 @@ export function MultiplayerGameScreen({
             : multiRow
               ? 'Click a highlighted row to place this card'
               : selectedPlays.length === 1
-                ? 'Click the card art (or Play) to confirm'
+                ? 'Double-click the hand card, or click the card art (or Play), to confirm'
                 : 'Click a highlighted target on the board';
 
   const confirmPlay = () => {
@@ -308,6 +316,7 @@ export function MultiplayerGameScreen({
             playableIndexes={playableIndexes}
             selectedIndex={selected}
             onCardClick={onHandClick}
+            onCardDoubleClick={onHandDoubleClick}
             onHover={setHoverId}
           />
           <button

@@ -35,6 +35,8 @@ Owner review fixes and editor rework:
 - Replaced unit-only reveal inference with an explicit played-card event, so
   Horn and every other special card visibly consume their turn instead of
   looking like a pass.
+- Added double-click fast play for hand cards with one unambiguous legal action;
+  Agile row choices and Decoy targets retain the safe selection flow.
 - Fixed Decoy battlefield state to match the Witcher 3 rulebook: it visibly
   replaces the returned unit as a zero-strength row occupant, remains through
   the round, and enters the graveyard during round cleanup.
@@ -53,7 +55,7 @@ Owner review fixes and editor rework:
   prove every legal faction/neutral card appears and can be found by name.
 - Added client regression coverage for pass detection and editor effect-text
   classification.
-- Verification: 113/113 tests passed, TypeScript passed, production build passed,
+- Verification: 116/116 tests passed, TypeScript passed, production build passed,
   and the local and public servers returned the new hashed bundle.
 
 The project owner has begun live browser review and reported/fixed the issues

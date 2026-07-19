@@ -7,6 +7,7 @@ import { Hand } from '../components/Hand.tsx';
 import { PlayReveal } from '../components/PlayReveal.tsx';
 import { LogPanel, StatusColumn } from '../components/SidePanel.tsx';
 import { loadDeck } from '../game/decks.ts';
+import { immediateHandPlay } from '../game/handInput.ts';
 import { HUMAN, humanActSequence, newLocalGame, starterDeck, type Difficulty } from '../game/localGame.ts';
 import { FIRST_STEP_MS, STEP_MS, usePlayReveals } from '../game/reveal.ts';
 
@@ -97,6 +98,13 @@ export function GameScreen({ faction, aiFaction, difficulty, onExit }: GameScree
     setSelected(i);
   };
 
+  const onHandDoubleClick = (i: number) => {
+    if (!myMove) return;
+    const action = immediateHandPlay(legal, i);
+    if (action) dispatch(action);
+    else setSelected(i);
+  };
+
   const multiRow =
     selectedPlays.length > 1 && selectedPlays.every((p) => p.row && !p.targetInstanceId);
   const decoyTargets = selectedPlays.some((p) => p.targetInstanceId);
@@ -117,7 +125,7 @@ export function GameScreen({ faction, aiFaction, difficulty, onExit }: GameScree
             : multiRow
               ? 'Click a highlighted row to place this card'
               : selectedPlays.length === 1
-                ? 'Click the card art (or Play) to confirm'
+                ? 'Double-click the hand card, or click the card art (or Play), to confirm'
                 : 'Click a highlighted target on the board';
 
   const confirmPlay = () => {
@@ -200,6 +208,7 @@ export function GameScreen({ faction, aiFaction, difficulty, onExit }: GameScree
             playableIndexes={playableIndexes}
             selectedIndex={selected}
             onCardClick={onHandClick}
+            onCardDoubleClick={onHandDoubleClick}
             onHover={setHoverId}
           />
           <button className="btn btn-pass" disabled={!canPass} onClick={() => dispatch({ type: 'PASS', player: HUMAN })}>

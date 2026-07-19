@@ -7,10 +7,12 @@ export interface HandProps {
   selectedIndex: number | null;
   /** Always called on click — selection / inspect, not auto-play. */
   onCardClick: (index: number) => void;
+  /** Fast play when a double-click resolves to one unambiguous action. */
+  onCardDoubleClick?: (index: number) => void;
   onHover?: (cardId: string | null) => void;
 }
 
-export function Hand({ cardIds, playableIndexes, selectedIndex, onCardClick, onHover }: HandProps) {
+export function Hand({ cardIds, playableIndexes, selectedIndex, onCardClick, onCardDoubleClick, onHover }: HandProps) {
   return (
     <div className="hand">
       {cardIds.map((id, i) => (
@@ -21,6 +23,7 @@ export function Hand({ cardIds, playableIndexes, selectedIndex, onCardClick, onH
           selected={selectedIndex === i}
           dimmed={!playableIndexes.has(i)}
           onClick={() => onCardClick(i)}
+          onDoubleClick={onCardDoubleClick ? () => onCardDoubleClick(i) : undefined}
           onHover={onHover}
         />
       ))}

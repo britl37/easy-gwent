@@ -9,6 +9,7 @@ export interface CardProps {
   selected?: boolean;
   dimmed?: boolean;
   onClick?: () => void;
+  onDoubleClick?: () => void;
   onHover?: (cardId: string | null) => void;
   size?: 'row' | 'hand' | 'big';
 }
@@ -20,7 +21,7 @@ export function cardArtUrl(cardId: string, extension: (typeof EXTS)[number]): st
   return `/assets/cards/${cardId}${extension}?v=${CARD_ART_REVISION}`;
 }
 
-export function Card({ cardId, strength, selected, dimmed, onClick, onHover, size = 'row' }: CardProps) {
+export function Card({ cardId, strength, selected, dimmed, onClick, onDoubleClick, onHover, size = 'row' }: CardProps) {
   const [extIndex, setExtIndex] = useState(0);
   const [failed, setFailed] = useState(false);
 
@@ -57,6 +58,7 @@ export function Card({ cardId, strength, selected, dimmed, onClick, onHover, siz
       ].join(' ')}
       title={def.name}
       onClick={onClick}
+      onDoubleClick={onDoubleClick}
       onMouseEnter={() => onHover?.(cardId)}
       onMouseLeave={() => onHover?.(null)}
     >

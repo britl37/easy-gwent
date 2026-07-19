@@ -22,6 +22,16 @@ Tests are colocated in `packages/*/test/**/*.test.ts`. Card art is fetched into 
 - `npm run build:code`: build packages without fetching images.
 - `npm run fetch-assets`: populate `assets/cards/` from `scripts/asset-manifest.json`.
 - `npm run build-card-text`: refresh committed card text data when needed.
+- `npm run refresh-wiki-cache`: refresh the local Witcher 3 Gwent wiki reference.
+
+## Local Witcher 3 Gwent Reference
+
+Before searching the web for gameplay rules or card behavior, search the raw
+wiki pages cached under `.wiki-cache/witcher3-gwent/pages/`. Use
+`.wiki-cache/witcher3-gwent/index.json` to locate pages and verify source URLs,
+revision IDs, and timestamps. The cache covers the Witcher Wiki's complete
+`Category:The Witcher 3 gwent` tree and intentionally excludes standalone
+GWENT. It is third-party CC BY-SA material and must remain gitignored.
 
 ## Coding Style & Naming Conventions
 

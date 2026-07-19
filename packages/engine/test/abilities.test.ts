@@ -220,3 +220,40 @@ describe('active leaders', () => {
     expect(() => applyAction(s, { type: 'PLAY_LEADER', player: 0 })).toThrow();
   });
 });
+
+describe('gaunter odimm muster (regression)', () => {
+  it('darkness pulls the other copies from deck on play', () => {
+    let s = bareGame();
+    s.players[0].deck.push('ne_gaunter_darkness', 'ne_gaunter_darkness', 'ne_gaunter_odimm');
+    s = playFromHand(s, 0, 'ne_gaunter_darkness');
+    const board = [...s.players[0].rows.ranged.units, ...s.players[0].rows.siege.units]
+      .filter((u) => byId(u.cardId).musterGroup === 'odimm');
+    // Test deck already contains neutral Gaunter copies, so muster pulls those
+    // plus the 3 we pushed — assert at least played + 3 and the deck drained.
+    expect(board.length).toBeGreaterThanOrEqual(4);
+    expect(s.players[0].deck.filter((id) => byId(id).musterGroup === 'odimm')).toEqual([]);
+  });
+});
+
+describe('villentretenmerth unit scorch (regression)', () => {
+  it('destroys strongest enemy melee unit when enemy melee >= 10', () => {
+    let s = bareGame();
+    place(s, 1, 'nf_black_archer', 'melee'); // if rows allow; strength 10 total via units below
+    place(s, 1, 'nf_impera_brigade', 'melee'); // 3
+    place(s, 1, 'nf_impera_brigade', 'melee'); // 3
+    place(s, 1, 'nf_impera_brigade', 'melee'); // 3
+    place(s, 1, 'nf_impera_brigade', 'melee'); // 3 -> 12+ total
+    s = playFromHand(s, 0, 'ne_villentretenmerth', 'melee');
+    const before = 5;
+    expect(s.players[1].rows.melee.units.length).toBeLessThan(before);
+    expect(s.log.some((l) => l.text.includes('scorched'))).toBe(true);
+  });
+
+  it('does nothing (with a log entry) when enemy melee < 10', () => {
+    let s = bareGame();
+    place(s, 1, 'nf_impera_brigade', 'melee'); // 3
+    s = playFromHand(s, 0, 'ne_villentretenmerth', 'melee');
+    expect(s.players[1].rows.melee.units.length).toBe(1);
+    expect(s.log.some((l) => l.text.includes('no effect'))).toBe(true);
+  });
+});

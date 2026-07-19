@@ -50,7 +50,12 @@ export function globalScorch(s: GameState): void {
  * totals >= 10, destroy its strongest non-hero unit(s).
  */
 export function unitScorch(s: GameState, player: PlayerId, row: Row): void {
-  scorchRowIfStrong(s, otherPlayer(player), row, 10);
+  const target = otherPlayer(player);
+  if (rowScore(s, target, row) < 10) {
+    s.log.push({ turn: s.turnCount, text: `Scorch has no effect (enemy ${row} row below 10)` });
+    return;
+  }
+  scorchRowIfStrong(s, target, row, 10);
 }
 
 /** Leader-style row scorch: destroy strongest non-hero unit(s) on `row` of `target` if the row totals >= threshold. */
